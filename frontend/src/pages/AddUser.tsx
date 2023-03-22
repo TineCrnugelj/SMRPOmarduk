@@ -1,5 +1,7 @@
 import {useEffect, useMemo, useState} from "react";
 import {Button, Form} from "react-bootstrap";
+import {useEffect, useMemo, useState} from "react";
+import {Button, Form} from "react-bootstrap";
 import Card from "../components/Card";
 
 import classes from './AddUser.module.css';
@@ -95,6 +97,14 @@ const AddUser: React.FC<AddUserProps> = (
                     password.length >= MIN_PASSWORD_LENGTH &&
                     email.includes('@');
         }
+        if (isEdit) {
+            return  username.length >= MIN_USERNAME_LENGTH &&
+                email.includes('@');
+        } else {
+            return  username.length >= MIN_USERNAME_LENGTH &&
+                    password.length >= MIN_PASSWORD_LENGTH &&
+                    email.includes('@');
+        }
     }, [username, password, email]);  
 
     const userDataChangedHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -105,6 +115,8 @@ const AddUser: React.FC<AddUserProps> = (
     }
 
     const adminChangeHandler = () => {
+        setIsAdminRadio(isAdminRadio => !isAdminRadio);
+        setIsUserRadio(false);
         setIsAdminRadio(isAdminRadio => !isAdminRadio);
         setIsUserRadio(false);
     }
@@ -130,6 +142,49 @@ const AddUser: React.FC<AddUserProps> = (
     const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setPassword(e.target.value);
     }
+
+    const onPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const passwordValue = e.target.value;
+        const hiddenPassValue = passHidden;
+    
+        let showLength = 1;
+        let hideAll = setTimeout(() => {}, 0);
+    
+        let offset = passwordValue.length - hiddenPassValue.length;
+    
+        if (offset > 0) {
+            setPassHidden(hiddenPassValue +
+                passwordValue.substring(
+                  hiddenPassValue.length,
+                  hiddenPassValue.length + offset
+                )
+            );
+        } else if (offset < 0) {
+          setPassHidden(
+            hiddenPassValue.substring(
+              0,
+              hiddenPassValue.length + offset
+            )
+          );
+        }
+    
+        if (passwordValue.length > showLength) {
+          setPassword(
+              passwordValue
+                .substring(0, passwordValue.length - showLength)
+                .replace(/./g, "•") +
+              passwordValue.substring(
+                passwordValue.length - showLength,
+                passwordValue.length
+              )
+          );
+        }
+    
+        clearTimeout(hideAll);
+        hideAll = setTimeout(() => {
+          setPassword(passwordValue.replace(/./g, "•"))
+        }, 200);
+    };
 
     const submitFormHandler = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -180,7 +235,12 @@ const AddUser: React.FC<AddUserProps> = (
 
         setUserData({
             id: '',
+            id: '',
             username: '',
+            passwordOld: '',
+            confirmPassword: '',
+            firstName: '',
+            lastName: '',
             passwordOld: '',
             confirmPassword: '',
             firstName: '',
@@ -190,8 +250,13 @@ const AddUser: React.FC<AddUserProps> = (
         setPassword('');
         setIsUserRadio(true);
         setIsAdminRadio(false);
+        setPassword('');
+        setIsUserRadio(true);
+        setIsAdminRadio(false);
     }
 
+    if (isEdit) {
+        return (
     if (isEdit) {
         return (
             <Form onSubmit={submitFormHandler}>
@@ -199,10 +264,27 @@ const AddUser: React.FC<AddUserProps> = (
                     <Form.Label>Username</Form.Label>
                     <Form.Control
                         placeholder="Enter username"
+                    <Form.Label>Username</Form.Label>
+                    <Form.Control
+                        placeholder="Enter username"
                         name="username"
                         value={username}
                         onChange={userDataChangedHandler}
+                        value={username}
+                        onChange={userDataChangedHandler}
                     />
+                </Form.Group>
+                
+                <Form.Group className="mb-3" controlId="formBasicOldPassword">
+                    <Form.Label>Old password</Form.Label>
+                    <Form.Control
+                        type={oldPasswordType}
+                        placeholder="Enter old password"   
+                        name='passwordOld'
+                        value={passwordOld}
+                        onChange={userDataChangedHandler}
+                    />
+                    <Form.Check type='checkbox' id='showOldPassword' label='Show password' onClick={handleShowOldPassword} />              
                 </Form.Group>
                 
                 <Form.Group className="mb-3" controlId="formBasicOldPassword">
@@ -241,11 +323,19 @@ const AddUser: React.FC<AddUserProps> = (
                         value={confirmPassword}
                         onChange={userDataChangedHandler}
                         onBlur={checkPasswordLength}
+                        onBlur={checkPasswordLength}
                     />
+                    {!passwordsMatch && <ValidationError>Passwords don't match</ValidationError>}
                     {!passwordsMatch && <ValidationError>Passwords don't match</ValidationError>}
                 </Form.Group>
 
+
                 <Form.Group className="mb-3" controlId="formBasicName">
+                    <Form.Label>Firstname</Form.Label>
+                    <Form.Control
+                        placeholder="Enter your name"
+                        name='firstName'
+                        value={firstName}
                     <Form.Label>Firstname</Form.Label>
                     <Form.Control
                         placeholder="Enter your name"
@@ -261,11 +351,19 @@ const AddUser: React.FC<AddUserProps> = (
                         placeholder="Enter your lastname"
                         name='lastName'
                         value={lastName}
+                    <Form.Label>Lastname</Form.Label>
+                    <Form.Control
+                        placeholder="Enter your lastname"
+                        name='lastName'
+                        value={lastName}
                         onChange={userDataChangedHandler}
                     />
                 </Form.Group>
 
                 <Form.Group className="mb-3" controlId="formBasicEmail">
+                    <Form.Label>E-mail</Form.Label>
+                    <Form.Control
+                        placeholder="Enter your e-mail"
                     <Form.Label>E-mail</Form.Label>
                     <Form.Control
                         placeholder="Enter your e-mail"
@@ -277,16 +375,20 @@ const AddUser: React.FC<AddUserProps> = (
 
                 <div className={classes.radioButtonContainer}>
                     <Form.Check
+                    <Form.Check
                         type='radio'
                         id='admin'
                         label='Administrator'
                         checked={isAdminRadio}
+                        checked={isAdminRadio}
                         onClick={adminChangeHandler}
                     />
+                    <Form.Check
                     <Form.Check
                         type='radio'
                         id='user'
                         label='User'
+                        checked={isUserRadio}
                         checked={isUserRadio}
                         onClick={userChangeHandler}
                     />

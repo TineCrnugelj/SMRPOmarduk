@@ -18,3 +18,6 @@ export function parseDate(dateString: string) {
 
     return `${date}, ${time[0]}`;
 }
+
+    return JSON.parse(jsonPayload);
+}

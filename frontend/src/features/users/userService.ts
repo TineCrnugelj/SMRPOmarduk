@@ -6,6 +6,13 @@ const USERS_API_URL = 'http://localhost:3000/api/user';
 const COMMON_PASSWORD_API_URL = 'http://localhost:3000/api/common-password';
 const USER_LOGIN_URL = 'http://localhost:3000/api/user-login';
 
+const deleteUser = async (userId: string, token: string) => {
+    const config = {
+        headers: {
+            Authorization: `JWT ${token}`
+        }
+    }
+    const response = await axios.delete(`${USERS_API_URL}/${userId}`, config);
 
 const login = async (userData: LoginData) => {
     const response = await axios.post(`${AUTH_API_URL}/login`, userData);

@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { LoginData, UserData, UserDataEdit } from "../../classes/userData";
+import { LoginData, UserData, UserDataEdit } from "../../classes/userData";
 import userService from "./userService";
 
 let user = JSON.parse(localStorage.getItem('user')!);
@@ -125,8 +126,40 @@ export const userSlice = createSlice({
             state.isSuccess = false
             state.message = ''
         }
+        reset: (state) => {
+            state.isLoading = false
+            state.isError = false
+            state.isSuccess = false
+            state.message = ''
+        }
     },
     extraReducers: builder => {
+        builder
+            .addCase(login.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(login.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isSuccess = true;
+                state.isError = false;
+                state.message = '';
+                state.user = action.payload.token
+            })
+            .addCase(login.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload
+                state.user = null
+            })
+            .addCase(getAllUsers.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(getAllUsers.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isSuccess = true;
+                state.isError = false;
+                state.message = '';
+                state.users = action.payload
         builder
             .addCase(login.pending, (state) => {
                 state.isLoading = true

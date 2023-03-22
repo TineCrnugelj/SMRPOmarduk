@@ -1,5 +1,6 @@
 import Card from "../components/Card";
 import { Button, Form, Modal } from "react-bootstrap";
+import { Button, Form, Modal } from "react-bootstrap";
 import { BoxArrowInRight } from "react-bootstrap-icons";
 import React, {Fragment, useEffect, useState} from "react";
 import ValidationError from "../components/ValidationError";
@@ -13,6 +14,10 @@ import classes from './Login.module.css';
 import { parseJwt } from "../helpers/helpers";
 
 const Login = () => {
+    const dispatch = useAppDispatch();
+    const navigate = useNavigate();
+    const {user, isError, message, isSuccess} = useAppSelector(state => state.users);
+    const [userData, setUserData] = useState<LoginData>({
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const {user, isError, message, isSuccess} = useAppSelector(state => state.users);
@@ -94,6 +99,7 @@ const Login = () => {
     
     return (
         <Card style={{ marginTop: '10rem' }}>
+        <Card style={{ marginTop: '10rem' }}>
             <div className={classes.header}>
                 <BoxArrowInRight size={50} color='royalblue' style={{ marginRight: '.5rem' }} />
                 <h1 className='text-primary'>Login</h1>
@@ -119,6 +125,7 @@ const Login = () => {
                         value={password}
                         onChange={handleInputChange}
                     />
+                    {message !== '' && <ValidationError>Invalid credentials</ValidationError>}
                     {message !== '' && <ValidationError>Invalid credentials</ValidationError>}
                 </Form.Group>
                 <Button variant="primary" type="submit" disabled={!formIsValid}>Login</Button>
