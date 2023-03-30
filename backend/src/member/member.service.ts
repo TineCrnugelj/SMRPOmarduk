@@ -102,6 +102,10 @@ export class MemberService {
         return isValid;
     }
 
+    async hasValidRole(projectId: number, userId: number, roleToBeCompared: number): Promise<Member> {
+        return await this.memberRepository.findOneBy({ projectId: projectId, userId: userId, role: roleToBeCompared });
+    }
+
     hasAtLeastOneRole(projectMembers: CreateMemberDto[], roleForCheck: number): Boolean {
         let roleCount: number = 0;
         projectMembers.forEach(newMember => {
