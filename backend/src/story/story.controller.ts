@@ -11,9 +11,9 @@ import { ValidationException } from '../common/exception/validation.exception';
 import { MemberService } from 'src/member/member.service';
 
 @ApiTags('story')
-// @ApiBearerAuth()
-// @ApiUnauthorizedResponse()
-// @UseGuards(AuthGuard('jwt'))
+@ApiBearerAuth()
+@ApiUnauthorizedResponse()
+@UseGuards(AuthGuard('jwt'))
 @Controller('story')
 export class StoryController {
   constructor(
@@ -48,10 +48,10 @@ export class StoryController {
       const scrumMaster = await this.memberService.hasValidRole(projectId, story.userId, 1);
       const member = await this.memberService.hasValidRole(projectId, story.userId, 2);
 
-      if(member == null && scrumMaster == null){
+      if (member == null && scrumMaster == null) {
         throw new UnauthorizedException('The user that would like to create a story, is neither a product owner, nor a scrum master for this project.');
       }
-     
+
       const row = await this.storyService.createStory(story, projectId);
       const storyId = row["id"];
       await this.testService.createTest(storyId, story.tests);
@@ -61,7 +61,7 @@ export class StoryController {
         throw new HttpException(ex.message, HttpStatus.CONFLICT)
       } else if (ex instanceof ValidationException) {
         throw new BadRequestException(ex.message);
-      }else if(ex  instanceof UnauthorizedException){
+      } else if (ex instanceof UnauthorizedException) {
         throw new UnauthorizedException(ex.message);
       }
     }
