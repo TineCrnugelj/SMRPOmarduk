@@ -10,10 +10,12 @@ import { TestService } from '../test/test.service';
 import { ValidationException } from '../common/exception/validation.exception';
 import { Token } from '../auth/decorator/token.decorator';
 import { ProjectService } from '../project/project.service';
-import { UserRole } from 'src/project/project-user-role.entity';
+import { UserRole } from '../project/project-user-role.entity';
 
 @ApiTags('story')
-// di
+@ApiBearerAuth()
+@ApiUnauthorizedResponse()
+@UseGuards(AuthGuard('jwt'))
 @Controller('story')
 export class StoryController {
   constructor(
