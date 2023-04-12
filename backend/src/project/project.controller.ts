@@ -16,9 +16,9 @@ import { UserService } from '../user/user.service';
 import { TokenDto } from '../auth/dto/token.dto';
 
 @ApiTags('project')
-// @ApiBearerAuth()
-// @ApiUnauthorizedResponse()
-// @UseGuards(AuthGuard('jwt'), AdminOnlyGuard)
+@ApiBearerAuth()
+@ApiUnauthorizedResponse()
+@UseGuards(AuthGuard('jwt'), AdminOnlyGuard)
 @Controller('project')
 export class ProjectController {
   constructor(
@@ -50,7 +50,6 @@ export class ProjectController {
   @AdminOnly()
   @Post()
   async createProject(@Body(new JoiValidationPipe(CreateProjectSchema)) project: CreateProjectDto) {
-    console.log("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYyy");
     try {
       // Check if only one member is product owner and if this member does not have any other roles.
       if (!hasNewProjectProjectOwner(project.userRoles)) {
@@ -99,7 +98,7 @@ export class ProjectController {
   ) {
     // Check permissions
     if (!token.isAdmin && !await this.projectService.isUserOnProject(projectId, token.sid))
-      throw new ForbiddenException();
+      throw new ForbiddenException('Only the admin or the user on a project can view the project members.');
     return await this.projectService.listUsersWithRolesOnProject(projectId);
   }
 
