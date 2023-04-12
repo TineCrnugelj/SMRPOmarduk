@@ -1,11 +1,11 @@
-export interface Member {
-    userId: string,
-    role: number,
+export interface UserRole {
+    userId: number,
+    role: number[]
 }
 
 export interface ProjectData {
     id?:       string,
     projectName: string,
-    members:  Member[]
-
+    projectDescription: string,
+    userRoles: UserRole[],
 }

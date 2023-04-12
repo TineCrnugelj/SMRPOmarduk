@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, Body, Controller, Delete, Get, NotFoundException, Param, ParseIntPipe, Patch, Post, UseGuards, HttpException, HttpStatus, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Body, Controller, Delete, Get, NotFoundException, Param, ParseIntPipe, Patch, Post, UseGuards, HttpException, HttpStatus, UnauthorizedException, ForbiddenException } from '@nestjs/common';
 import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { CreateStoryDto, CreateStorySchema } from './dto/create-story.dto';
@@ -8,18 +8,18 @@ import { Story } from './story.entity';
 import { StoryService } from './story.service';
 import { TestService } from '../test/test.service';
 import { ValidationException } from '../common/exception/validation.exception';
-import { MemberService } from 'src/member/member.service';
+import { Token } from '../auth/decorator/token.decorator';
+import { ProjectService } from '../project/project.service';
+import { UserRole } from 'src/project/project-user-role.entity';
 
 @ApiTags('story')
-@ApiBearerAuth()
-@ApiUnauthorizedResponse()
-@UseGuards(AuthGuard('jwt'))
+// di
 @Controller('story')
 export class StoryController {
   constructor(
     private readonly storyService: StoryService,
     private readonly testService: TestService,
-    private readonly memberService: MemberService
+    private readonly projectService: ProjectService
   ) { }
 
   @ApiOperation({ summary: 'List stories' })
@@ -42,14 +42,11 @@ export class StoryController {
   @ApiOperation({ summary: 'Create story' })
   @ApiCreatedResponse()
   @Post('/:projectId/add-story')
-  async createStory(@Body(new JoiValidationPipe(CreateStorySchema)) story: CreateStoryDto, @Param() params) {
+  async createStory(@Token() token, @Body(new JoiValidationPipe(CreateStorySchema)) story: CreateStoryDto, @Param('projectId', ParseIntPipe) projectId: number) {
     try {
-      const projectId = parseInt(params.projectId);
-      const scrumMaster = await this.memberService.hasValidRole(projectId, story.userId, 1);
-      const member = await this.memberService.hasValidRole(projectId, story.userId, 2);
-
-      if (member == null && scrumMaster == null) {
-        throw new UnauthorizedException('The user that would like to create a story, is neither a product owner, nor a scrum master for this project.');
+      let hasValidRole: boolean = await this.projectService.hasUserRoleOnProject(projectId, token.sid, [UserRole.ProjectOwner, UserRole.ScrumMaster]);
+      if (!hasValidRole) {
+        throw new ForbiddenException('The user you are trying to add the story with is neither a scrum master nor a product owner.');
       }
 
       const row = await this.storyService.createStory(story, projectId);
@@ -63,10 +60,11 @@ export class StoryController {
         throw new BadRequestException(ex.message);
       } else if (ex instanceof UnauthorizedException) {
         throw new UnauthorizedException(ex.message);
+      } else if (ex instanceof ForbiddenException) {
+        throw new ForbiddenException(ex.message);
       }
     }
   }
-
 
   @ApiOperation({ summary: 'Update story' })
   @ApiOkResponse()
