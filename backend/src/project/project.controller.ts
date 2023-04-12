@@ -13,12 +13,12 @@ import { UserRole } from './project-user-role.entity';
 import { ValidationException } from '../common/exception/validation.exception';
 import { AdminOnlyGuard } from '../auth/guard/admin-only.guard';
 import { UserService } from '../user/user.service';
-import { TokenDto } from 'src/auth/dto/token.dto';
+import { TokenDto } from '../auth/dto/token.dto';
 
 @ApiTags('project')
-@ApiBearerAuth()
-@ApiUnauthorizedResponse()
-@UseGuards(AuthGuard('jwt'), AdminOnlyGuard)
+// @ApiBearerAuth()
+// @ApiUnauthorizedResponse()
+// @UseGuards(AuthGuard('jwt'), AdminOnlyGuard)
 @Controller('project')
 export class ProjectController {
   constructor(
@@ -50,6 +50,7 @@ export class ProjectController {
   @AdminOnly()
   @Post()
   async createProject(@Body(new JoiValidationPipe(CreateProjectSchema)) project: CreateProjectDto) {
+    console.log("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYyy");
     try {
       // Check if only one member is product owner and if this member does not have any other roles.
       if (!hasNewProjectProjectOwner(project.userRoles)) {
@@ -67,7 +68,6 @@ export class ProjectController {
         if (user == null)
           throw new NotFoundException(`One of users not found in the database.`);
       }
-      
       const row = await this.projectService.createProject(project);
       const projectId = (<any>row).id;
       for (const userRole of project.userRoles)
