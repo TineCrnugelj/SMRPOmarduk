@@ -13,9 +13,9 @@ import { ProjectService } from '../project/project.service';
 import { UserRole } from '../project/project-user-role.entity';
 
 @ApiTags('story')
-// @ApiBearerAuth()
-// @ApiUnauthorizedResponse()
-// @UseGuards(AuthGuard('jwt'))
+@ApiBearerAuth()
+@ApiUnauthorizedResponse()
+@UseGuards(AuthGuard('jwt'))
 @Controller('story')
 export class StoryController {
   constructor(
@@ -66,23 +66,23 @@ export class StoryController {
   }
 
 
-@ApiOperation({ summary: 'Update story' })
-@ApiOkResponse()
-@Patch(':storyId')
-async updateStory(@Param('storyId', ParseIntPipe) storyId: number, @Body(new JoiValidationPipe(UpdateStorySchema)) story: UpdateStoryDto) {
-  try {
-    await this.storyService.updateStoryById(storyId, story);
-  } catch (ex) {
-    if (ex instanceof ValidationException)
-      throw new BadRequestException(ex);
-    throw ex;
+  @ApiOperation({ summary: 'Update story' })
+  @ApiOkResponse()
+  @Patch(':storyId')
+  async updateStory(@Param('storyId', ParseIntPipe) storyId: number, @Body(new JoiValidationPipe(UpdateStorySchema)) story: UpdateStoryDto) {
+    try {
+      await this.storyService.updateStoryById(storyId, story);
+    } catch (ex) {
+      if (ex instanceof ValidationException)
+        throw new BadRequestException(ex);
+      throw ex;
+    }
   }
-}
 
-@ApiOperation({ summary: 'Delete story' })
-@ApiOkResponse()
-@Delete(':storyId')
-async deleteStory(@Param('storyId', ParseIntPipe) storyId: number) {
-  await this.storyService.deleteStoryById(storyId);
-}
+  @ApiOperation({ summary: 'Delete story' })
+  @ApiOkResponse()
+  @Delete(':storyId')
+  async deleteStory(@Param('storyId', ParseIntPipe) storyId: number) {
+    await this.storyService.deleteStoryById(storyId);
+  }
 }
