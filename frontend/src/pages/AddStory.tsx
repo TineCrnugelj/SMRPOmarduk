@@ -7,7 +7,7 @@ import classes from "./AddStory.module.css";
 
 import { StoryData } from "../classes/storyData";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
-import { createStory } from "../features/stories/storySlice";
+import { getAllStory } from "../features/stories/storySlice";
 
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -17,6 +17,7 @@ const AddStory = () => {
   let state = useAppSelector((state) => state.stories);
 
   const [storyData, setStoryData] = useState({
+    id: "",
     title: "",
     description: "",
     tests: [""],
@@ -51,7 +52,7 @@ const AddStory = () => {
     !testsError.includes(true) &&
     !testsTouched.includes(false);
 
-  const { title, description, priority, businessValue, tests, sequenceNumber } =
+  const {id, title, description, priority, businessValue, tests, sequenceNumber } =
     storyData;
 
   // for adding inputs in the 'Tests' section
@@ -155,6 +156,7 @@ const AddStory = () => {
     e.preventDefault();
 
     const newStory: StoryData = {
+      id,
       title,
       description,
       tests,
@@ -166,11 +168,12 @@ const AddStory = () => {
     console.log(storyData);
 
     // send to backend
-    dispatch(createStory(newStory));
+    //dispatch(createStory(newStory));
 
     // set inputs to default values
 
     setStoryData({
+      id: "",
       title: "",
       description: "",
       tests: [""],

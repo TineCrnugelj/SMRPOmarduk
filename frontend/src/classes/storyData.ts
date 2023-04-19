@@ -1,5 +1,5 @@
 export interface StoryData {
-    id?:       string,
+    id:  string,
     title:  string,
     description:  string,
     tests: string[],
@@ -7,3 +7,17 @@ export interface StoryData {
     businessValue:     number,
     sequenceNumber: number
 }
+
+export enum SprintBacklogItemStatus {
+    UNALLOCATED = 'Unallocated',
+    ALLOCATED = 'Allocated',
+    IN_PROGRESS = 'In Progress',
+    DONE = 'Done',
+  }
+
+export enum ProductBacklogItemStatus {
+    UNALLOCATED = 'Unallocated',
+    ALLOCATED = 'Allocated',
+    DONE = 'Done',
+}
+

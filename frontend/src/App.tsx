@@ -17,6 +17,11 @@ import Header from './components/Header';
 import AddProject from "./pages/AddProject";
 import AddSprint from "./pages/AddSprint";
 
+import ProductBacklog from './pages/ProductBacklog';
+import SprintBacklog from './pages/SprintBacklog';
+import MyTasks from './pages/MyTasks';
+
+
 function App() {
   return (
     <Fragment>
@@ -44,6 +49,9 @@ function App() {
           <Route path='/users' element={<Users />} />
           <Route path='/add-project' element={<AddProject />} />
           <Route path='/add-sprint' element={<AddSprint />} />
+          <Route path='/product-backlog' element={<ProductBacklog />} />
+          <Route path='/sprint-backlog' element={<SprintBacklog />} />
+          <Route path='/my-tasks' element={<MyTasks />} />
         </Routes>
       </Router>
     </Fragment>

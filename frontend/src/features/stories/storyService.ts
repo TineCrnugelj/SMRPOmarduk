@@ -7,20 +7,32 @@ const STORY_API_URL = `${getBaseUrl()}/api/story`;
 
 // const STORY_API_URL = `http://localhost:3000/api/story`;
 
-const create = async (storyData: StoryData, token: string) => {
+const getAllStory = async (token: string) => {
     const config = {
         headers: {
             Authorization: `JWT ${token}`
         }
     }
 
-    const response = await axios.post(`${STORY_API_URL}`, storyData, config);
+    const response = await axios.get(`${STORY_API_URL}`, config);
+
+    return response.data;
+}
+
+const deleteStory = async (storyId: string, token: string) => {
+    const config = {
+        headers: {
+            Authorization: `JWT ${token}`
+        }
+    }
+    const response = await axios.delete(`${STORY_API_URL}/${storyId}`, config);
 
     return response.data;
 }
 
 const storyService = {
-    create
+    getAllStory,
+    deleteStory
 }
 
 export default storyService;

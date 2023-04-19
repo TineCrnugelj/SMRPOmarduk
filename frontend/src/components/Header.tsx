@@ -1,5 +1,5 @@
-import {Container, Nav, Navbar, NavDropdown, } from 'react-bootstrap';
-import { HouseDoorFill, PersonCircle, Bell, QuestionCircle, Calendar, Journals } from "react-bootstrap-icons";
+import {Container, Nav, Navbar, NavDropdown, NavItem, } from 'react-bootstrap';
+import { HouseDoorFill, PersonCircle, Bell, QuestionCircle, Calendar, Journals, Stack } from "react-bootstrap-icons";
 import "bootstrap/dist/css/bootstrap.css";
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 
@@ -58,6 +58,16 @@ function Header() {
     const redirectToChangePassword = () => {
         navigate('/change-password');
     }
+    const redirectToProductBacklog = () => {
+        navigate('/product-backlog');
+    }
+    const redirectToSprintBacklog = () => {
+        navigate('/sprint-backlog');
+    }
+    const redirectToMyTask = () => {
+        navigate('/my-tasks');
+    }
+    
 
     return (
         <Navbar collapseOnSelect expand="lg" bg="light" variant="light">
@@ -66,7 +76,27 @@ function Header() {
                 <Navbar.Toggle aria-controls="responsive-navbar-nav" />
                 <Navbar.Collapse id="responsive-navbar-nav">
                     <Nav className="ms-auto">
+                       
+                            <NavDropdown
+                            id="backlog-dropdown"
+                            title={
+                              <span>
+                                <Stack className="mb-1"></Stack> Backlog
+                              </span>
+                            }
+                          >
+                            <NavDropdown.Item onClick={redirectToProductBacklog}>
+                            ProductBacklog
+                            </NavDropdown.Item>
+                            {isAdmin && (<NavDropdown.Item onClick={redirectToSprintBacklog}>
+                            SprintBacklog
+                            </NavDropdown.Item>
+                            ) }
+                          </NavDropdown>
+                            
+                       
                     {isAdmin && (
+                
               <NavDropdown
                 id="sprint-dropdown"
                 title={
@@ -101,6 +131,14 @@ function Header() {
                     <NavDropdown.Item onClick={redirectToChangePassword}>
                         Change password
                     </NavDropdown.Item>
+                    {
+                        isAdmin && 
+                        (  
+                            <NavDropdown.Item onClick={redirectToMyTask}>
+                                MyTasks
+                            </NavDropdown.Item>
+                        )
+                    }
                     {
                         isAdmin && 
                         (   
