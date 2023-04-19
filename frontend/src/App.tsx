@@ -28,7 +28,7 @@ function App() {
       <Router>
         <Header />
         <Routes>
-          <Route path="/" element={<Dashboard />} />
+          <Route path="/" element={<ProductBacklog />} />
           <Route path="/add-user" element={
             <AddUser
               isEdit={false}
