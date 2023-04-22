@@ -1,0 +1,12 @@
+.inputsContainer {
+    display: inline-flex;
+}
+
+.inputGroup input {
+    margin: .5rem;
+}
+
+.inputGroup label {
+    margin-top: .7rem;
+}
+

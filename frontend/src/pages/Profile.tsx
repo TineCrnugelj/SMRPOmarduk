@@ -9,6 +9,7 @@ import { Button, Form, Modal } from "react-bootstrap";
 import QRCode from "react-qr-code";
 
 import classes from './Profile.module.css';
+import LogTimeModal from "../components/LogTimeModal";
 
 const Profile = () => {
     const dispatch = useAppDispatch();
@@ -16,6 +17,8 @@ const Profile = () => {
     const [userId, setUserId] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [codeText, setCodeText]   = useState('');
+
+    const [showLogModal, setShowLogModal] = useState(false);
 
     const closeModal = () => {setShowModal(false)};
 
@@ -62,6 +65,10 @@ const Profile = () => {
         }
         dispatch(confirm2FA(confirmData));
         closeModal();
+    }
+
+    const handleLogWork = () => {
+        setShowLogModal(true);
     }
 
     const renderModal = () => {
@@ -114,6 +121,7 @@ const Profile = () => {
                         >
                             {twoFaEnabled ? 'Disable' : 'Enable'} 2 Fa
                         </Button>
+                        <Button onClick={handleLogWork}>Log work</Button>
                     </div>
                     {userData && (
                         <AddUser
@@ -133,6 +141,7 @@ const Profile = () => {
                     )}
                 </Card>
                 {showModal && renderModal()}
+                {showLogModal && <LogTimeModal showModal={true} />}
             </Fragment>
         );
     }
