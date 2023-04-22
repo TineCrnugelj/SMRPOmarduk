@@ -48,54 +48,6 @@ import classes from "./Dashboard.module.css";
 import StoryModal from "./StoryModal";
 import DropdownMenu from "react-bootstrap/esm/DropdownMenu";
 
-//const token = JSON.parse(localStorage.getItem('user')!).token;
-
-//StoryData
-//installed packages:
-//npm install @hello-pangea/dnd --save
-//npm install uuidv4
-//npm install react-bootstrap-icons --save
-//npm install --save react-bootstrap
-//npm install bootstrap --save
-
-/*
-
-const itemsFromBackend123 = [
-  { id: uuid(), content: "First task" },
-  { id: uuid(), content: "Second task" },
-  { id: uuid(), content: "Third task" },
-  { id: uuid(), content: "Fourth task" },
-  { id: uuid(), content: "Fifth task" },
-];
-
-
-
-
-    
-
-const columnsFromBackend = {
-  [uuid()]: {
-    name: "Requested",
-    items: []
-  },
-  [uuid()]: {
-    name: "To do",
-    items: [],
-  },
-  [uuid()]: {
-    name: "In Progress",
-    items: [],
-  },
-  [uuid()]: {
-    name: "Done",
-    items: [],
-  },
-};
-  
-
-  
-
-*/
 
 const defaultItems = {
   [ProductBacklogItemStatus.UNALLOCATED]: [],
@@ -107,6 +59,7 @@ type TaskboardData = Record<ProductBacklogItemStatus, StoryData[]>;
 
 function Dashboard() {
   const dispatch = useAppDispatch();
+  const {activeProject} = useAppSelector(state =>  state.projects);
   let storyState = useAppSelector((state) => state.stories);
 
   useEffect(() => {
@@ -124,13 +77,11 @@ function Dashboard() {
   }, [storyState.isSuccess, storyState.isError, storyState.isLoading]);
 
   //let stories = useAppSelector((state) => state.stories);
-  //console.log(stories)
   const navigate = useNavigate();
   const { user } = useAppSelector((state) => state.users);
 
   useEffect(() => {
     if (user === null) {
-      console.log("redirect");
       navigate("/login");
     }
   }, [user]);
@@ -183,7 +134,6 @@ function Dashboard() {
     status: ProductBacklogItemStatus;
     itemToDelete: StoryData;
   }) => void;
-
   const handleDelete: HandleDeleteFunc = ({ status, itemToDelete }) =>
     setItemsByStatus((current) =>
       produce(current, (draft) => {
@@ -199,13 +149,10 @@ function Dashboard() {
   //doda začetne elemnte
 
   useEffect(() => {
-    //console.log(ProductBacklogItemStatus)
-    //console.log(itemsByStatus)
-
+    console.log(activeProject);
     const isEmpty = Object.values(itemsByStatus).every(
       (value) => value.length === 0
     );
-    console.log(isEmpty);
     if (isEmpty && isSuccess) {
       setItemsByStatus((current) =>
         produce(current, (draft) => {
@@ -308,7 +255,6 @@ function Dashboard() {
                             }}
                           >
                             {itemsByStatus[status].map((item, index) => {
-                              console.log(status);
 
                               return (
                                 <Draggable

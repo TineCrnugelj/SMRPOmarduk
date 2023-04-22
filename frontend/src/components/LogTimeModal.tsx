@@ -1,7 +1,6 @@
 import {Button, Form, Modal} from "react-bootstrap";
 import React, {useState} from "react";
 
-import classes from './LogTimeModal.module.css';
 import TimeInputs from "./TimeInputs";
 
 interface LogTimeModalProps {
@@ -41,7 +40,7 @@ const LogTimeModal: React.FC<LogTimeModalProps> = ({showModal}) => {
   }
 
   return (
-    <Modal show={show} onHide={closeModal} dialogClassName="modal-90w">
+    <Modal show={show} onHide={closeModal} dialogClassName="modal-lg">
       <Modal.Header closeButton>
         <Modal.Title>Log work</Modal.Title>
       </Modal.Header>
