@@ -6,7 +6,7 @@
     margin: .5rem;
 }
 
-.inputGroup label {
-    margin-top: .7rem;
+.inputGroup label, span {
+    margin-top: .9rem;
 }
 

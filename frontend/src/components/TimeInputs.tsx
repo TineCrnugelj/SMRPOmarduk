@@ -1,21 +1,26 @@
-import classes from "./LogTimeModal.module.css";
-import {Form} from "react-bootstrap";
 import React, {useState} from "react";
+import {Form} from "react-bootstrap";
+
+import classes from "./LogTimeModal.module.css";
 
 interface TimeInputsProps {
+  index: number,
+  onChange: (id: number, timeSpent: number, timeRemaining: number) => void,
   date: string,
   spentTimeInit: number,
   remainingTimeInit: number
 }
-const TimeInputs: React.FC<TimeInputsProps> = ({date, spentTimeInit, remainingTimeInit}) => {
+const TimeInputs: React.FC<TimeInputsProps> = ({index, onChange, date, spentTimeInit, remainingTimeInit}) => {
   const [spentTime, setSpentTime] = useState(spentTimeInit);
   const [remainingTime, setRemainingTime] = useState(remainingTimeInit);
 
   const handleSpentTimeChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSpentTime(+e.currentTarget.value)
+    setSpentTime(+e.currentTarget.value);
+    onChange(index, +e.currentTarget.value, -1);
   }
   const handleRemainingChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setRemainingTime(+e.currentTarget.value)
+    setRemainingTime(+e.currentTarget.value);
+    onChange(index, -1, +e.currentTarget.value);
   }
 
   return (
@@ -33,6 +38,7 @@ const TimeInputs: React.FC<TimeInputsProps> = ({date, spentTimeInit, remainingTi
           />
         </div>
       </Form.Group>
+      <span>hours,&nbsp;</span>
       <Form.Group className={classes.inputGroup} controlId="formBasicremaining">
         <div style={{display: 'inline-flex'}}>
           <Form.Label>Remaining</Form.Label>
