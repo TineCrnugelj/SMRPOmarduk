@@ -7,9 +7,6 @@ import {
   DragDropContextProps,
 } from "@hello-pangea/dnd";
 import { v4 as uuid } from "uuid";
-<<<<<<< HEAD
-import { Button, Card, CloseButton, Col, Dropdown, Form, InputGroup, ListGroup, Modal, Nav, ProgressBar, Row, Tab, Table, ToggleButton, ToggleButtonGroup } from "react-bootstrap";
-=======
 import {
   Button,
   Card,
@@ -25,8 +22,9 @@ import {
   Row,
   Tab,
   Table,
+  ToggleButton,
+  ToggleButtonGroup,
 } from "react-bootstrap";
->>>>>>> 58a5c0c159f8cd0489f9d6ecb5540bfebdade31d
 import {
   CircleFill,
   Clock,
