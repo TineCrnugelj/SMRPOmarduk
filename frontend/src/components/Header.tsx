@@ -3,7 +3,7 @@ import {
   HouseDoorFill,
   PersonCircle,
   Calendar,
-  Journals, Stack,
+  Journals, Stack, Sticky,
 } from "react-bootstrap-icons";
 import "bootstrap/dist/css/bootstrap.css";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
@@ -12,7 +12,7 @@ import { getLastLogin, logout } from "../features/users/userSlice";
 import { Fragment, useEffect, useMemo, useState } from "react";
 import { parseDate, parseJwt } from "../helpers/helpers";
 import { useNavigate } from "react-router-dom";
-import {getAllSprints} from "../features/sprints/sprintSlice";
+import {getAllSprints, setActiveSprint} from "../features/sprints/sprintSlice";
 
 function Header() {
   const dispatch = useAppDispatch();
@@ -49,13 +49,17 @@ function Header() {
   useEffect(() => {}, [userData]);
 
   const activeSprint = useMemo(() => {
-    return sprints.find(sprint => {
+    const activeSpr = sprints.find(sprint => {
       const startDate = new Date(sprint.startDate);
       const endDate = new Date(sprint.endDate);
       const today = new Date();
 
       return today >= startDate && today <= endDate;
     });
+
+    dispatch(setActiveSprint(activeSpr));
+    
+    return activeSpr;
   }, [sprints]);
 
   useEffect(() => {}, [sprints]);
@@ -101,6 +105,9 @@ function Header() {
   const redirectToEditProfile = () => {
     navigate("/profile");
   };
+  const redirectToWall = (projectId: string) => {
+    navigate(`/projects/${projectId}/wall`);
+  }
 
   return (
     <Navbar collapseOnSelect expand="lg" bg="light" variant="light">
@@ -152,6 +159,13 @@ function Header() {
                     Add Project
                   </NavDropdown.Item>
               )}
+              {
+                activeProject.id !== '' && (
+                  <NavDropdown.Item onClick={() => {redirectToWall(activeProject.id!)}}>
+                    <Sticky /> Wall
+                  </NavDropdown.Item>
+                )
+              }
             </NavDropdown>
             <NavDropdown
               id="sprint-dropdown"
@@ -165,7 +179,6 @@ function Header() {
                 (
                   <Fragment>
                     <NavDropdown.Item onClick={() => navigate(`/projects/${activeProject.id}/sprints`)}>Sprint list</NavDropdown.Item>
-                    <NavDropdown.Item onClick={() => navigate(`/projects/${activeProject.id}/userStories`)}>User stories</NavDropdown.Item>
                   </Fragment>
                 ) :
                 <p style={{marginLeft: '1.5rem'}} className='text-secondary'>No active project</p>}
@@ -193,6 +206,9 @@ function Header() {
                 }
                 id="basic-nav-dropdown"
             >
+              <NavDropdown.Item onClick={redirectToMyTask}>
+                My Tasks
+              </NavDropdown.Item>
               <NavDropdown.Item onClick={handleLoginAndLogout}>
                 {user === null ? "Log in" : "Logout"}
               </NavDropdown.Item>
