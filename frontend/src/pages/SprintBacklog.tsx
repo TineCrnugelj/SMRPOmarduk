@@ -95,7 +95,7 @@ const columnsFromBackend = {
 
 
 
-function Dashboard() {
+function SprintBacklog() {
   const dispatch = useAppDispatch();
 
 
@@ -157,7 +157,6 @@ useEffect(() => {
   const userData = parseJwt(token);
   setIsAdmin(userData.isAdmin);
   setUserName(userData.sub);
-
 }, [user, ]);
 
   
@@ -390,4 +389,4 @@ const initvalue: StoryData = {
   );
 }
 
-export default Dashboard;
+export default SprintBacklog;

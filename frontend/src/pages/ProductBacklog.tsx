@@ -57,6 +57,9 @@ import {
   getAllSprints,
 } from "../features/sprints/sprintSlice";
 import { StorySprint } from "../classes/sprintData";
+import Projects from "./Projects";
+import { getProjectUserRoles } from  "../features/projects/projectSlice";
+
 
 //const token = JSON.parse(localStorage.getItem('user')!).token;
 
@@ -114,7 +117,7 @@ const defaultItems = {
   [ProductBacklogItemStatus.DONE]: [],
 };
 
-console.log(Object.keys(defaultItems));
+
 
 type TaskboardData = Record<ProductBacklogItemStatus, StoryData[]>;
 
@@ -128,7 +131,7 @@ function ProductBacklog() {
   let { stories, isSuccess, isLoading, isError } = useAppSelector(
     (state) => state.stories
   );
-
+  let projectroles = useAppSelector((state) => state.projectRoles);
   let SprintSelector = useAppSelector((state) => state.sprints);
 
   //console.log(SprintSelector)
@@ -146,9 +149,22 @@ function ProductBacklog() {
   useEffect(() => {
     dispatch(getAllStory());
     dispatch(getActiveProject());
-    dispatch(getAllSprints(activeProject.id!));
-    console.log(activeProject)
+    
+    
   }, []);
+
+  useEffect(() => {
+    
+    if (activeProject.id) {
+      dispatch(getAllSprints(activeProject.id!));
+      dispatch(getProjectUserRoles(activeProject.id!))
+    }
+  }, [activeProject]);
+
+  console.log(projectroles.userRoles)
+//console.log(activeProject)
+
+
 
   // NOTE: temporary fix, change this if needed
   /*
@@ -301,20 +317,32 @@ function ProductBacklog() {
     (itemId: string) => (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       handleFormToggle(itemId);
+
+      
+
+      let projectRoleData = {
+        timeComplexity: itemTime[itemId],
+        storyId: itemId,
+      };
+      dispatch(updateTimeComplexity(projectRoleData));
+
     };
   const handleKeyDown = (e: any) => {
     e.preventDefault();
 
     const val = e.target.value;
-    let projectRoleData1 = {
-      timeComplexity: val,
-      storyId: e.target.id,
-    };
-
-    console.log(projectRoleData1);
+    const targetId = e.target.id
+    
     if (val.length > 0 && /^\d+$/.test(val)) {
-      dispatch(updateTimeComplexity(projectRoleData1));
-    }
+      setItemTime((prev) => {
+        const newState = { ...prev };
+        newState[targetId] = val;
+        return newState;
+      });
+  }
+
+    
+    
     //else if (e.target.value == '') dispatch(updateTimeComplexity(projectRoleData2));
     //dispatch(getAllStory());
   };
@@ -341,16 +369,16 @@ function ProductBacklog() {
           // Adding new item as "to do"
           //console.log("zgodbice ob updatu")
           //console.log(stories)
+          const visibilityObject: { [itemId: string]: boolean } = {};
+          const insertTimeObject: { [itemId: string]: number } = {};
           stories.forEach((story: StoryData) => {
             //za beleženje časa init values
-            const visibilityObject: { [itemId: string]: boolean } = {};
-            visibilityObject[story.id!] = false;
-            setItemVisibility(visibilityObject);
-            //za beleženje vnosa časa
-            const insertTimeObject: { [itemId: string]: number } = {};
-            insertTimeObject[story.id!] = story.timeComplexity;
-            setItemTime(insertTimeObject);
 
+            visibilityObject[story.id!] = false;
+            //za beleženje vnosa časa
+            insertTimeObject[story.id!] = story.timeComplexity;
+           
+            
             //storyi
             let cat;
             if (story.priority === 0) {
@@ -376,6 +404,8 @@ function ProductBacklog() {
               isRealized: story.isRealized,
             });
           });
+          setItemVisibility(visibilityObject);
+          setItemTime(insertTimeObject);
         })
       );
     }
@@ -484,7 +514,7 @@ function ProductBacklog() {
                                 isDragDisabled={
                                   status ===
                                     ProductBacklogItemStatus.WONTHAVE ||
-                                  !Boolean(item.timeComplexity)
+                                  !Boolean(itemTime[item.id!])
                                 }
                               >
                                 {(provided, snapshot) => {
@@ -504,7 +534,8 @@ function ProductBacklog() {
                                           <p className="fs-6 text-muted m-1">
                                             TSK-{item.sequenceNumber}
                                           </p>
-
+                                          {status !==
+                                                ProductBacklogItemStatus.WONTHAVE && (
                                           <Dropdown className="ms-auto">
                                             <Dropdown.Toggle
                                               variant="link"
@@ -512,8 +543,19 @@ function ProductBacklog() {
                                               bsPrefix="p-0"
                                             >
                                               <ThreeDots />
+
                                             </Dropdown.Toggle>
                                             <Dropdown.Menu>
+                                            {status !==
+                                                ProductBacklogItemStatus.UNALLOCATED && (
+                                                <Dropdown.Item
+                                                  onClick={() =>
+                                                    openEditStoryModal(item)
+                                                  }
+                                                >
+                                                  <Pencil /> Reject
+                                                </Dropdown.Item>
+                                              )}
                                               {status ===
                                                 ProductBacklogItemStatus.UNALLOCATED && (
                                                 <Dropdown.Item
@@ -528,17 +570,6 @@ function ProductBacklog() {
                                                 ProductBacklogItemStatus.UNALLOCATED && (
                                                 <Dropdown.Item
                                                   onClick={() => setShow(true)}
-                                                  /* onClick={() =>
-                                              Modal.confirm({
-                                                title: 'Delete?',
-                                                content: `Are you sure to delete "${item.title}"?`,
-                                                onOk: () =>
-                                                  onDelete({
-                                                    status,
-                                                    itemToDelete: item,
-                                                  }),
-                                              })
-                                            } */
                                                 >
                                                   <Trash /> Delete
                                                 </Dropdown.Item>
@@ -551,6 +582,7 @@ function ProductBacklog() {
                                               />
                                             </Dropdown.Menu>
                                           </Dropdown>
+                                          )}
                                         </Card.Header>
                                         <Card.Body>
                                           <Card.Text
@@ -614,7 +646,7 @@ function ProductBacklog() {
                                                         className="mobileBox"
                                                         size="sm"
                                                         pattern="[0-9]*"
-                                                        defaultValue="0"
+                                                        value={itemTime[item.id!]}
                                                         id={item.id}
                                                         onChange={handleKeyDown}
                                                         type="tel"
@@ -635,7 +667,8 @@ function ProductBacklog() {
                                                     variant="link"
                                                     className="m-0 p-0 float-end text-decoration-none"
                                                   >
-                                                    {item.timeComplexity}
+                                                    {itemTime[item.id!]}
+                                                    
                                                   </Button>
                                                 )}
                                               </Col>
@@ -707,3 +740,4 @@ function ProductBacklog() {
 }
 
 export default ProductBacklog;
+
