@@ -113,10 +113,6 @@ export const projectSlice = createSlice({
             state.isSuccess = false
             state.isEditSuccess = false
             state.message = ''
-        },
-        setActiveProject: (state, action) => {
-            const project: ProjectData | undefined = state.projects.find(project => project.id === action.payload);
-            state.activeProject = project!;
         }
     },
     extraReducers: builder => {
@@ -220,4 +216,4 @@ export const projectSlice = createSlice({
 })
 
 export default projectSlice.reducer;
-export const {reset, setActiveProject} = projectSlice.actions
+export const {reset} = projectSlice.actions
