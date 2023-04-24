@@ -11,7 +11,6 @@ import { UpdateSprintDto, UpdateSprintSchema } from './dto/update-sprint.dto';
 import { UserRole } from '../project/project-user-role.entity';
 import { ValidationException } from '../common/exception/validation.exception';
 import { StoryService } from '../story/story.service';
-import { throwError } from 'rxjs';
 
 @ApiTags('sprint')
 @ApiBearerAuth()
@@ -24,6 +23,18 @@ export class SprintController {
     private readonly sprintService: SprintService,
     private readonly storyService: StoryService
   ) { }
+
+  @ApiOperation({ summary: 'Get sprint by ID.' })
+  @ApiOkResponse()
+  @Get('/active-sprint')
+  async getActiveSprint(
+  ): Promise<Sprint[]> {
+    // Check permissions
+    const sprint = await this.sprintService.getActiveSprint();
+    if (!sprint)
+      throw new NotFoundException();
+    return sprint;
+  }
 
   @ApiOperation({ summary: 'List sprints for project.' })
   @ApiOkResponse()
@@ -128,7 +139,7 @@ export class SprintController {
     if(sprint.velocity = storyIdsInSprint)
       throw new BadRequestException('The number of stories in the sprint is equal to the sprint velocity.');
 
-    if (!await this.projectService.hasUserRoleOnProject(story.projectId, token.sid, UserRole.ScrumMaster))
+    if(!token.isAdmin && !await this.projectService.hasUserRoleOnProject(story.projectId, token.sid, UserRole.ScrumMaster))
       throw new ForbiddenException('Only the scrum master can add the story to sprint.');
 
     await this.sprintService.addStoryToSprint(sprintId, storyId);

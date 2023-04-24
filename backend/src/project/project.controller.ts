@@ -24,9 +24,9 @@ import { ProjectWallNotificationCommentService } from '../project-wall-notificat
 import { CreateProjectWallNotificationCommentSchema, CreateProjectWallNotificationCommentDto } from '../project-wall-notification-comment/dto/create-notification-comment.dto';
 
 @ApiTags('project')
-@ApiBearerAuth()
-@ApiUnauthorizedResponse()
-@UseGuards(AuthGuard('jwt'), AdminOnlyGuard)
+// @ApiBearerAuth()
+// @ApiUnauthorizedResponse()
+// @UseGuards(AuthGuard('jwt'), AdminOnlyGuard)
 @Controller('project')
 export class ProjectController {
   constructor(
@@ -172,7 +172,7 @@ export class ProjectController {
   async updateProject(@Token() token, @Param('projectId', ParseIntPipe) projectId: number, @Body(new JoiValidationPipe(UpdateProjectSchema)) project: UpdateProjectDto) {
     try {
 
-      if (!token.isAdmin && !await this.projectService.hasUserRoleOnProject(projectId, token.sid, UserRole.ScrumMaster)) {
+      if (!token.isAdgmin && !await this.projectService.hasUserRoleOnProject(projectId, token.sid, UserRole.ScrumMaster)) {
         throw new ForbiddenException('User must be either an administrator or a scrum master to have any permission.');
       }
 
@@ -202,9 +202,8 @@ export class ProjectController {
   @ApiOperation({ summary: "Toggles the active flag for the project." })
   @ApiOkResponse()
   @Patch(':projectId/set-active')
-  async setActiveProject(@Param('projectId', ParseIntPipe) projectId: number) {
+  async setActiveProject(@Param('projectId', ParseIntPipe) projectId: number): Promise<Project> {
     try {
-
       let existingProject: Project = await this.projectService.getProjectById(projectId);
       if (!existingProject) {
         throw new NotFoundException('Project with the given ID not found.');
@@ -215,6 +214,8 @@ export class ProjectController {
       let toggledActive: boolean = !existingProject.isActive;
 
       await this.projectService.setActiveProject(projectId, toggledActive);
+
+      return await this.projectService.getProjectById(projectId);
     }
     catch (ex) {
       if (ex instanceof ConflictException) {
