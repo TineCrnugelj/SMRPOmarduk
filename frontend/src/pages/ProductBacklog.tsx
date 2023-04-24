@@ -123,10 +123,10 @@ function ProductBacklog() {
   //helper funkcija za updatat useState
   const [sgs, setSgs] = useState("undefined");
 
-  let { stories, isSuccess, isLoading, isError } = useAppSelector((state) => state.stories);
+  const { stories, isSuccess, isLoading, isError } = useAppSelector((state) => state.stories);
 
-  let SprintSelector = useAppSelector((state) => state.sprints);
-
+  //let SprintSelector = useAppSelector((state) => state.sprints);
+ 
 
   //console.log(SprintSelector)
   useEffect(() => {
@@ -142,17 +142,16 @@ function ProductBacklog() {
 
 
 
-
-
   useEffect(() => {
     dispatch(getAllStory());
     dispatch(getActiveProject());
     dispatch(getAllSprints(activeProject.id!));
+    console.log(activeProject)
   }, []);
 
 
 
-
+  
 
 
 
@@ -319,7 +318,9 @@ function ProductBacklog() {
     };
    
     console.log(projectRoleData1)
-    if (val.length > 0 && /^\d+$/.test(val)) { dispatch(updateTimeComplexity(projectRoleData1));}
+    if (val.length > 0 && /^\d+$/.test(val)) { 
+      dispatch(updateTimeComplexity(projectRoleData1));
+    }
     //else if (e.target.value == '') dispatch(updateTimeComplexity(projectRoleData2));
     //dispatch(getAllStory());
   };

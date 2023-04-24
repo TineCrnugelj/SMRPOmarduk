@@ -7,7 +7,7 @@ import {
   DragDropContextProps,
 } from "@hello-pangea/dnd";
 import { v4 as uuid } from "uuid";
-import { Button, Card, CloseButton, Col, Dropdown, Form, InputGroup, ListGroup, Modal, Nav, ProgressBar, Row, Tab, Table } from "react-bootstrap";
+import { Button, Card, CloseButton, Col, Dropdown, Form, InputGroup, ListGroup, Modal, Nav, ProgressBar, Row, Tab, Table, ToggleButton, ToggleButtonGroup } from "react-bootstrap";
 import {
   CircleFill,
   Clock,
@@ -262,10 +262,28 @@ const initvalue: StoryData = {
   return (
     <>
     <div className="row flex-row flex-sm-nowrap m-1 mt-3 justify-content-center">
+    
     <div className="col-sm-10 col-md-8 col-xl-6 mt-3">
-      
+      <div className="d-flex justify-content-end">
+      <ToggleButtonGroup type="radio" name="options" defaultValue={1}>
+        <ToggleButton id="tbg-radio-1" value={1}>
+          Unallocated
+        </ToggleButton>
+        <ToggleButton id="tbg-radio-2" value={2}>
+          Allocated
+        </ToggleButton>
+        <ToggleButton id="tbg-radio-3" value={3}>
+          Active
+        </ToggleButton>
+        <ToggleButton id="tbg-radio-4" value={4}>
+          Closed
+        </ToggleButton>
+      </ToggleButtonGroup>
+
+      </div>
     {Object.values(itemsByStatus).map((item) => {
-            console.log(item)
+            //console.log(item)
+
             return (
             
            <Card className="mt-3">
@@ -323,33 +341,7 @@ const initvalue: StoryData = {
       ))}
       
   
-      <tr className="align-middle">
-            <th><Button form='my_form' size="sm" type="button" onClick={handleAdd}>
-          Add
-        </Button></th>
-            <th>
-         
-         <Form.Control form='my_form' size="sm" placeholder="Title"/>
-       </th>
-            <th>Status</th>
-            <th>
-        
-        <Form.Select form='my_form' size="sm" defaultValue="Choose..." >
-        <option>/</option>
-        {allUsers.map((user) => (
-          <option key={allUsers.indexOf(user)}>{user}</option>
-
-           ))}
-        
-        </Form.Select>
-            </th>
-            <th >/</th>
-            <th>/</th>
-            <th>
-         
-         <Form.Control form='my_form' size="sm" placeholder="Title"/>
-      </th>
-          </tr>
+      
 
 </tbody>
 

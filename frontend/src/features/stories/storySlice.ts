@@ -195,7 +195,19 @@ export const storySlice = createSlice({
                 state.isError = false;
                 state.message = '';
                 state.stories = action.payload;
-
+                console.log(state.stories);
+                /*
+                const obj = action.meta.arg;
+                const index = state.stories.findIndex(story => story.id === obj.storyId);
+                const starStory = state.stories.find(story => story.id === obj.storyId)!;
+                console.log(JSON.stringify(starStory));
+                /
+                starStory.timeComplexity = obj.timeComplexity;
+                const newStories = [...state.stories];
+                newStories[index] = starStory;
+                state.stories = newStories;
+                */
+                // 
             })
             .addCase(updateTimeComplexity.rejected, (state, action) => {
                 state.isLoading = false
