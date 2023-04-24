@@ -59,6 +59,14 @@ function TaskModal({
     setTestsTouched([false]);
   };
 
+  const testChangedHandler = (e: any, index: number) => {
+    setTests((prevTests) => {
+      const newTests = [...prevTests];
+      newTests[index] = e.target.value;
+      return newTests;
+    });
+  };
+
 
   useEffect(() => {
     if (!(users.length === 0)){

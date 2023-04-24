@@ -285,6 +285,10 @@ function ProductBacklog() {
   const [itemVisibility, setItemVisibility] = useState<{
     [itemId: string]: boolean;
   }>({});
+  //za beleženje vnosačasa
+  const [itemTime, setItemTime] = useState<{
+    [itemId: string]: number;
+  }>({});
 
   const handleFormToggle = (itemId: string) => {
     setItemVisibility((prev) => {
@@ -342,6 +346,11 @@ function ProductBacklog() {
             const visibilityObject: { [itemId: string]: boolean } = {};
             visibilityObject[story.id!] = false;
             setItemVisibility(visibilityObject);
+            //za beleženje vnosa časa
+            const insertTimeObject: { [itemId: string]: number } = {};
+            insertTimeObject[story.id!] = story.timeComplexity;
+            setItemTime(insertTimeObject);
+
             //storyi
             let cat;
             if (story.priority === 0) {
@@ -370,7 +379,7 @@ function ProductBacklog() {
         })
       );
     }
-  }, [isSuccess, stories]);
+  }, [isSuccess]);
 
   //{Object.values.map(([columnId, column], index) => {
 

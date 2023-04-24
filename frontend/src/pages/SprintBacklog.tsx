@@ -266,16 +266,16 @@ const initvalue: StoryData = {
     <div className="col-sm-10 col-md-8 col-xl-6 mt-3">
       <div className="d-flex justify-content-end">
       <ToggleButtonGroup type="radio" name="options" defaultValue={1}>
-        <ToggleButton id="tbg-radio-1" value={1}>
+        <ToggleButton  variant="outline-primary" id="tbg-radio-1" value={1}>
           Unallocated
         </ToggleButton>
-        <ToggleButton id="tbg-radio-2" value={2}>
+        <ToggleButton  variant="outline-primary" id="tbg-radio-2" value={2}>
           Allocated
         </ToggleButton>
-        <ToggleButton id="tbg-radio-3" value={3}>
+        <ToggleButton  variant="outline-primary" id="tbg-radio-3" value={3}>
           Active
         </ToggleButton>
-        <ToggleButton id="tbg-radio-4" value={4}>
+        <ToggleButton  variant="outline-primary" id="tbg-radio-4" value={4}>
           Closed
         </ToggleButton>
       </ToggleButtonGroup>
