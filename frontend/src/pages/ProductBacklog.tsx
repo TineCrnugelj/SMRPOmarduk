@@ -59,6 +59,7 @@ import {
 import { StorySprint } from "../classes/sprintData";
 import Projects from "./Projects";
 import { getProjectUserRoles } from  "../features/projects/projectSlice";
+import { parseJwt } from "../helpers/helpers";
 
 
 //const token = JSON.parse(localStorage.getItem('user')!).token;
@@ -158,10 +159,38 @@ function ProductBacklog() {
     if (activeProject.id) {
       dispatch(getAllSprints(activeProject.id!));
       dispatch(getProjectUserRoles(activeProject.id!))
+      console.log(projectroles.userRoles)
     }
   }, [activeProject]);
 
-  console.log(projectroles.userRoles)
+
+
+
+  let { users, user } = useAppSelector((state) => state.users);
+  const [allUsers, setAllUsers] = useState<String[]>([]);
+
+  useEffect(() => {
+    if (!(users.length === 0)) {
+      const usernames = users.map((user) => user.username);
+      setAllUsers(usernames);
+    }
+  }, [users]);
+
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [userName, setUserName] = useState("");
+  useEffect(() => {
+    if (user === null) {
+      return;
+    }
+    const token = JSON.parse(localStorage.getItem("user")!).token;
+    const userData = parseJwt(token);
+    setIsAdmin(userData.isAdmin);
+    setUserName(userData.sub);
+  }, [user]);
+
+
+
+  
 //console.log(activeProject)
 
 
@@ -181,7 +210,7 @@ function ProductBacklog() {
   //let stories = useAppSelector((state) => state.stories);
   //console.log(stories)
   const navigate = useNavigate();
-  const { user } = useAppSelector((state) => state.users);
+
 
   useEffect(() => {
     if (user === null) {

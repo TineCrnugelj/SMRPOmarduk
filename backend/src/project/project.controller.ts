@@ -262,8 +262,8 @@ export class ProjectController {
     @Param('projectId', ParseIntPipe) projectId: number,
   ): Promise<ProjectUserRole[]> {
     // Check permissions
-    if (!token.isAdmin && !await this.projectService.isUserOnProject(projectId, token.sid))
-      throw new ForbiddenException('Only the admin or the user on a project can view the project members.');
+   /* if (!token.isAdmin && !await this.projectService.isUserOnProject(projectId, token.sid))
+      throw new ForbiddenException('Only the admin or the user on a project can view the project members.'); */
     return await this.projectService.listUsersWithRolesOnProject(projectId);
   }
 
