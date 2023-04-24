@@ -4,7 +4,8 @@ import React, {useEffect, useMemo, useState} from "react";
 import TimeInputs from "./TimeInputs";
 
 interface LogTimeModalProps {
-  showModal: boolean
+  showModal: boolean,
+  hideModal: () => void
 }
 
 interface TimeLog {
@@ -31,8 +32,8 @@ const DUMMY_LOGS: TimeLog[] = [
   },
 ];
 
-const LogTimeModal: React.FC<LogTimeModalProps> = ({showModal}) => {
-  const [show, setShow] = useState(true);
+const LogTimeModal: React.FC<LogTimeModalProps> = ({showModal, hideModal}) => {
+  const [show, setShow] = useState(showModal);
   const [showTodayLog, setShowTodayLog] = useState(false);
   const [logs, setLogs] = useState<TimeLog[]>(DUMMY_LOGS);
 
@@ -55,7 +56,9 @@ const LogTimeModal: React.FC<LogTimeModalProps> = ({showModal}) => {
     });
   }, [logs]);
 
-  const closeModal = () => {setShow(false)};
+  const closeModal = () => {
+    hideModal();
+  };
 
   const handleShowTodayLog = () => {
     setLogs(prevLogs => {
@@ -93,6 +96,7 @@ const LogTimeModal: React.FC<LogTimeModalProps> = ({showModal}) => {
   const handleSave = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log(logs);
+    hideModal();
   }
 
   return (

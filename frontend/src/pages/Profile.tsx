@@ -9,7 +9,6 @@ import { Button, Form, Modal } from "react-bootstrap";
 import QRCode from "react-qr-code";
 
 import classes from './Profile.module.css';
-import LogTimeModal from "../components/LogTimeModal";
 
 const Profile = () => {
     const dispatch = useAppDispatch();
@@ -141,7 +140,6 @@ const Profile = () => {
                     )}
                 </Card>
                 {showModal && renderModal()}
-                {showLogModal && <LogTimeModal showModal={true} />}
             </Fragment>
         );
     }

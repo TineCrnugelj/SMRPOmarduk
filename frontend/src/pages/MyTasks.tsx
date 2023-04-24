@@ -1,100 +1,18 @@
-import React, { Component, useEffect, useState } from "react";
-import {
-  DragDropContext,
-  Draggable,
-  Droppable,
-  DropResult,
-  DragDropContextProps,
-} from "@hello-pangea/dnd";
-import { v4 as uuid } from "uuid";
-import { Button, Card, CloseButton, Col, Dropdown, Form, InputGroup, ListGroup, Modal, Nav, ProgressBar, Row, Tab, Table } from "react-bootstrap";
-import {
-  CircleFill,
-  Clock,
-  Pencil,
-  ThreeDots,
-  Trash,
-  Stack,
-  ConeStriped,
-  X,
-} from "react-bootstrap-icons";
+import React, { useEffect, useState } from "react";
+import { Button, Card, Nav, Tab, Table } from "react-bootstrap";
+
 import "bootstrap/dist/css/bootstrap.css";
 import { useAppSelector, useAppDispatch } from "../app/hooks";
-import { Link, useNavigate } from "react-router-dom";
-import { StoryData, SprintBacklogItemStatus } from '../classes/storyData';
+import { useNavigate } from "react-router-dom";
+import { StoryData } from '../classes/storyData';
 
-import produce from 'immer';
-import  DeleteConfirmation  from './DeleteConfirmation'
-import { getAllStory, deleteStory } from "../features/stories/storySlice";
+import { getAllStory } from "../features/stories/storySlice";
 import classes from './Dashboard.module.css';
-import StoryModal from "./StoryModal";
-import DropdownMenu from "react-bootstrap/esm/DropdownMenu";
-
-//const token = JSON.parse(localStorage.getItem('user')!).token;
-
-
-//StoryData
-//installed packages:
-//npm install @hello-pangea/dnd --save
-//npm install uuidv4
-//npm install react-bootstrap-icons --save
-//npm install --save react-bootstrap
-//npm install bootstrap --save
-
-
-
- 
-
-
-
-
-/*
-
-const itemsFromBackend123 = [
-  { id: uuid(), content: "First task" },
-  { id: uuid(), content: "Second task" },
-  { id: uuid(), content: "Third task" },
-  { id: uuid(), content: "Fourth task" },
-  { id: uuid(), content: "Fifth task" },
-];
-
-
-
-
-    
-
-const columnsFromBackend = {
-  [uuid()]: {
-    name: "Requested",
-    items: []
-  },
-  [uuid()]: {
-    name: "To do",
-    items: [],
-  },
-  [uuid()]: {
-    name: "In Progress",
-    items: [],
-  },
-  [uuid()]: {
-    name: "Done",
-    items: [],
-  },
-};
-  
-
-  
-
-*/
-
-
-
-
-
-
+import LogTimeModal from "../components/LogTimeModal";
 
 function Dashboard() {
   const dispatch = useAppDispatch();
+  const [showModal, setShowModal] = useState(false);
   
   //demo
   const initialList = [
@@ -133,13 +51,10 @@ function Dashboard() {
   
   useEffect(() => {
     if (user === null) {
-      console.log("redirect");
       navigate("/login");
     }
   }, [user]);
 
-
- 
   let { stories, isSuccess} = useAppSelector((state) => state.stories);
 
 
@@ -159,18 +74,8 @@ function Dashboard() {
         return [];
     }
   }
-  
 
- 
-
-
-  
-  //doda začetne elemnte
-  
   useEffect(() => {
-    //console.log(SprintBacklogItemStatus)
-    //console.log(itemsByStatus)
-
     const isEmpty = Object.values(itemsByStatus).every(value => value);
     if (isEmpty && isSuccess) {
       
@@ -178,33 +83,28 @@ function Dashboard() {
           setItemsByStatus(stories);
           
     }
-
-    
-    
   }, [isSuccess]);
-
-
-
-//{Object.values.map(([columnId, column], index) => {
-
-
   
-const initvalue: StoryData = {
-  id: "",
-  title: "",
-  description: "",
-  tests: [],
-  priority: 0,
-  businessValue: 0,
-  sequenceNumber: 0,
-  category: 0,
-  timeComplexity: 0,
-  isRealized: false
-};
+  const initvalue: StoryData = {
+    id: "",
+    title: "",
+    description: "",
+    tests: [],
+    priority: 0,
+    businessValue: 0,
+    sequenceNumber: 0,
+    category: 0,
+    timeComplexity: 0,
+    isRealized: false
+  };
 
+  const openLogTimeModal = () => {
+    setShowModal(true);
+  }
 
- 
- 
+  const hideModal = () => {
+    setShowModal(false);
+  }
 
   
   return (
@@ -213,7 +113,6 @@ const initvalue: StoryData = {
     <div className="col-sm-10 col-md-8 col-xl-6 mt-3">
       
     {Object.values(itemsByStatus).map((item) => {
-            console.log(item)
             return (
             
            <Card className="mt-3">
@@ -267,18 +166,10 @@ const initvalue: StoryData = {
           <td >{item.workedTime}</td>
           <td >{item.remainingTime}</td>
           <td >{item.estimatedTime}</td>
-          <td ><Button variant="outline-primary" size="sm">Work History</Button></td>
+          <td ><Button variant="outline-primary" size="sm" onClick={openLogTimeModal}>Work History</Button></td>
         </tr>
       ))}
-      
-  
-     
-
 </tbody>
-
-
-
-
       </Table>
      
      
@@ -308,7 +199,7 @@ const initvalue: StoryData = {
          {/* showstory && <StoryModal item={tempDataStory} } />*/}
         
     
-    
+    {showModal && <LogTimeModal showModal={showModal} hideModal={hideModal} />}
   </>
   );
 }
