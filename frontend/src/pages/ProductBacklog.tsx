@@ -57,7 +57,6 @@ import {
   getAllSprints,
 } from "../features/sprints/sprintSlice";
 import { StorySprint } from "../classes/sprintData";
-import PlanninPokerModal from "../components/PlanningPokerModal";
 
 //const token = JSON.parse(localStorage.getItem('user')!).token;
 
@@ -404,7 +403,6 @@ function ProductBacklog() {
   };
 
   const openPlanningPokerModal = (item: any) => {
-    setStoryId(item.id);
     setShowPlanningPokerModal(true);
   }
 
@@ -708,7 +706,6 @@ function ProductBacklog() {
           </Modal.Body>
         </Modal>
       )}
-      {showPlanningPokerModal && <PlanninPokerModal storyId={tempDataStory.id!} closeModal={closePlanningPokerModal} showModal={showPlanningPokerModal} />}
     </>
   );
 }
