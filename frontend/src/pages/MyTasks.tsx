@@ -9,6 +9,7 @@ import { StoryData } from '../classes/storyData';
 import { getAllStory } from "../features/stories/storySlice";
 import classes from './Dashboard.module.css';
 import LogTimeModal from "../components/LogTimeModal";
+import Tasks from "../components/Tasks";
 
 function Dashboard() {
   const dispatch = useAppDispatch();
@@ -157,18 +158,7 @@ function Dashboard() {
         
       <tbody>
 
-      {list.map((item) => (
-        <tr key={item.id}>
-          <td >{item.id}</td>
-          <td >{item.title}</td>
-          <td ><Button className="align-middle text-decoration-none" variant="link">{item.status}</Button></td>
-          
-          <td >{item.workedTime}</td>
-          <td >{item.remainingTime}</td>
-          <td >{item.estimatedTime}</td>
-          <td ><Button variant="outline-primary" size="sm" onClick={openLogTimeModal}>Work History</Button></td>
-        </tr>
-      ))}
+      <Tasks storyId={item.id!} />
 </tbody>
       </Table>
      

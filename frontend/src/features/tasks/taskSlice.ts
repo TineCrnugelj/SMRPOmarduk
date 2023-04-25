@@ -19,6 +19,15 @@ const initialState: TaskState = {
     message: ''
 }
 
+export const getAllTasks = createAsyncThunk('/task/getAllTasks', async (storyId: string, thunkAPI: any) => {
+    try {
+        const token = JSON.parse(localStorage.getItem('user')!).token;
+        return await taskService.getAllTasks(storyId, token);
+    } catch (error: any) {
+        const message = (error.response && error.response.data && error.response.data.message)  || error.message || error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+});
 
 
 export const createTask = createAsyncThunk('/task/createTask', async (taskData: any, thunkAPI: any) => {
@@ -75,6 +84,22 @@ export const taskSlice = createSlice({
     },
     extraReducers: builder => {
         builder
+            .addCase(getAllTasks.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(getAllTasks.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isSuccess = true;
+                state.isError = false;
+                state.message = '';
+                state.tasks = action.payload;
+            })
+            .addCase(getAllTasks.rejected, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = false;
+                state.isError = true
+                state.message = action.payload
+            })
             .addCase(createTask.pending, (state) => {
                 state.isLoading = true
             })

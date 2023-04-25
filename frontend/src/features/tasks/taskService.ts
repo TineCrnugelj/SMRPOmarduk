@@ -55,11 +55,23 @@ const assignUser = async (assignUserData: any, token: string) => {
     return response.data;
 }
 
+const getAllTasks = async (storyId: string, token: string) => {
+    const config = {
+        headers: {
+            Authorization: `JWT ${token}`
+        }
+    }
+    const response = await axios.get(`${TASK_API_URL}/story/${storyId}`, config);
+
+    return response.data;
+}
+
 const taskService = {
     createTask,
     editTask,
     deleteTask,
     assignUser,
+    getAllTasks,
 }
 
 export default taskService;
