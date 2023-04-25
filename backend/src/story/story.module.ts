@@ -5,13 +5,10 @@ import { Story } from './story.entity';
 import { StoryController } from './story.controller';
 import { StoryService } from './story.service';
 import { TestModule } from '../test/test.module';
-<<<<<<< HEAD
-=======
 import { PlanningPokerService } from './planning-poker.service';
 import { PlanningPokerController } from './planning-poker.controller';
 import { PlanningPokerRound } from './planning-poker-round.entity';
 import { PlanningPokerVote } from './planning-poker-vote.entity';
->>>>>>> origin/backend-task
 import { StoryNotificationModule } from '../story-notification/story-notification.module';
 
 @Module({

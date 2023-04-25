@@ -50,11 +50,7 @@ export class Story {
   @Column({ type: 'tinyint', default: Backlog.Product })
   backlog: number;
 
-<<<<<<< HEAD
-  @Column({ type: 'integer', default: 0 })
-=======
   @Column({ type: 'float', default: 0 })
->>>>>>> origin/backend-task
   timeComplexity: number
 
   @Column({ type: 'boolean', default: false })
