@@ -51,6 +51,10 @@ export class TaskService {
     if (!await this.storyService.isStoryInActiveSprint(storyId))
       throw new ValidationException('Story not in active sprint');
 
+    // Check if story already completed
+    if (await this.storyService.isStoryFinished(storyId))
+      throw new ValidationException('Story already finished');
+    
     // TODO: Check remaining value
     
 
@@ -246,6 +250,10 @@ export class TaskService {
     return await this.taskUserTimeRepository.find({ where: { taskId: taskId }, relations: ['user'], order: { 'date': 'ASC' }})
   }
 
+  async getWorkOnTaskForUser(taskId: number, userId: number): Promise<TaskUserTime[]> {
+    return await this.taskUserTimeRepository.find({ where: { taskId: taskId, userId: userId }, order: { 'date': 'ASC' }})
+  }
+
   async getWorkOnTaskForUserByDate(taskId: number, userId: number, date: string): Promise<TaskUserTime | null> {
     const result = await this.taskUserTimeRepository.findOneBy({ taskId: taskId, userId: userId, date: date });
     return result || null;
@@ -257,6 +265,10 @@ export class TaskService {
   }
 
   async setWorkOnTask(date: string, taskId: number, userId: number, work: DeepPartial<TaskUserTime>): Promise<void> {
+    // We can't enter work for future
+    if (moment(date, 'YYYY-MM-DD').isAfter(moment(), 'd'))
+      throw new ValidationException('Can\'t enter work on task for future');
+
     work.date = date;
     work.taskId = taskId;
     work.userId = userId;
