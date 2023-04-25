@@ -55,6 +55,7 @@ import StoryForm from "../components/StoryForm";
 import { getActiveProject } from "../features/projects/projectSlice";
 import {
   addStoryToSprint,
+  getActiveSprint,
   getAllSprints,
   updateSprint,
 } from "../features/sprints/sprintSlice";
@@ -162,6 +163,7 @@ function ProductBacklog() {
     if (activeProject.id) {
       dispatch(getAllSprints(activeProject.id!));
       dispatch(getProjectUserRoles(activeProject.id!))
+      dispatch(getActiveSprint(activeProject.id!))
     }
   }, [activeProject]);
 
@@ -173,6 +175,7 @@ function ProductBacklog() {
       if (filteredData) {
         setScrumMasterId(filteredData[0].userId)
       }
+      
     }
   }, [userRoles]);
 
@@ -202,7 +205,7 @@ function ProductBacklog() {
     const userData = parseJwt(token);
     setIsAdmin(userData.isAdmin);
     setUserName(userData.sub);
-    setUserId(userData.id)
+    setUserId(userData.sid)
   }, [user]);
 
   const isUserScramMaster = () => {
@@ -212,7 +215,7 @@ function ProductBacklog() {
     
   };
 
-console.log(userId)
+
   
 //console.log(isUserScramMaster())
 
@@ -328,6 +331,9 @@ console.log(userId)
         };
         dispatch(addStoryToSprint(storySprint)); 
         } 
+        //itemsByStatus[destination.droppableId].length
+        console.log(typeof destination.droppableId)
+
       })
     );
   };
@@ -550,6 +556,9 @@ console.log(userId)
                         New Story
                       </Button>
                     )}
+                    {status === ProductBacklogItemStatus.ALLOCATED && (
+                      <p>{SprintSelector.activeSprint?.velocity}</p>
+                    )}
                   </div>
                   <hr className="hr mx-3" />
 
@@ -707,7 +716,8 @@ console.log(userId)
                                                         className="mobileBox"
                                                         size="sm"
                                                         pattern="[0-9]*"
-                                                        value={itemTime[item.id!]}
+                                                        //value={itemTime[item.id!]}
+                                                        placeholder={itemTime[item.id!].toString()}
                                                         id={item.id}
                                                         onChange={handleKeyDown}
                                                         type="tel"
