@@ -1,4 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToOne, Unique } from 'typeorm';
+
+import { PlanningPokerRound } from './planning-poker-round.entity';
 import { Project } from '../project/project.entity';
 import { Task } from '../task/task.entity';
 import { StoryTest } from '../test/test.entity';
@@ -48,7 +50,11 @@ export class Story {
   @Column({ type: 'tinyint', default: Backlog.Product })
   backlog: number;
 
+<<<<<<< HEAD
   @Column({ type: 'integer', default: 0 })
+=======
+  @Column({ type: 'float', default: 0 })
+>>>>>>> origin/backend-task
   timeComplexity: number
 
   @Column({ type: 'boolean', default: false })
@@ -69,4 +75,6 @@ export class Story {
   @ManyToOne(type => Project, project => project.stories, { onUpdate: 'CASCADE', onDelete: 'CASCADE' })
   project: Project;
 
+  @OneToMany(type => PlanningPokerRound, round => round.story)
+  planningPockerRounds: PlanningPokerRound[];
 }

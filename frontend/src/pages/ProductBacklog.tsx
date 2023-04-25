@@ -32,6 +32,7 @@ import {
   Stack,
   ConeStriped,
   X,
+  Eraser,
 } from "react-bootstrap-icons";
 import "bootstrap/dist/css/bootstrap.css";
 import { useAppSelector, useAppDispatch } from "../app/hooks";
@@ -55,11 +56,13 @@ import { getActiveProject } from "../features/projects/projectSlice";
 import {
   addStoryToSprint,
   getAllSprints,
+  updateSprint,
 } from "../features/sprints/sprintSlice";
 import { StorySprint } from "../classes/sprintData";
 import Projects from "./Projects";
 import { getProjectUserRoles } from  "../features/projects/projectSlice";
 import { parseJwt } from "../helpers/helpers";
+import RejectStoryModal from "./RejectStoryModal";
 
 
 //const token = JSON.parse(localStorage.getItem('user')!).token;
@@ -124,7 +127,8 @@ type TaskboardData = Record<ProductBacklogItemStatus, StoryData[]>;
 
 function ProductBacklog() {
   const dispatch = useAppDispatch();
-  const { activeProject } = useAppSelector((state) => state.projects);
+  const { activeProject, userRoles } = useAppSelector((state) => state.projects);
+  
   //dispatch(getActiveProject());
   //helper funkcija za updatat useState
   const [sgs, setSgs] = useState("undefined");
@@ -132,9 +136,8 @@ function ProductBacklog() {
   let { stories, isSuccess, isLoading, isError } = useAppSelector(
     (state) => state.stories
   );
-  let projectroles = useAppSelector((state) => state.projectRoles);
+  let projectroles = useAppSelector((state) => state.projects);
   let SprintSelector = useAppSelector((state) => state.sprints);
-
   //console.log(SprintSelector)
   useEffect(() => {
     if (isSuccess && !isLoading) {
@@ -159,13 +162,24 @@ function ProductBacklog() {
     if (activeProject.id) {
       dispatch(getAllSprints(activeProject.id!));
       dispatch(getProjectUserRoles(activeProject.id!))
-      console.log(projectroles.userRoles)
     }
   }, [activeProject]);
 
+  useEffect(() => {
+    
+    if (activeProject.id) {
+      const dataArray = Object.values(userRoles);
+      const filteredData = dataArray.filter(item => item.role === 1);
+      if (filteredData) {
+        setScrumMasterId(filteredData[0].userId)
+      }
+    }
+  }, [userRoles]);
+
+//console.log(projectroles.userRoles)
 
 
-
+  //uporabniki
   let { users, user } = useAppSelector((state) => state.users);
   const [allUsers, setAllUsers] = useState<String[]>([]);
 
@@ -178,6 +192,8 @@ function ProductBacklog() {
 
   const [isAdmin, setIsAdmin] = useState(false);
   const [userName, setUserName] = useState("");
+  const [userId, setUserId] = useState();
+  const [scrumMasterId, setScrumMasterId] = useState();
   useEffect(() => {
     if (user === null) {
       return;
@@ -186,12 +202,19 @@ function ProductBacklog() {
     const userData = parseJwt(token);
     setIsAdmin(userData.isAdmin);
     setUserName(userData.sub);
+    setUserId(userData.id)
   }, [user]);
 
+  const isUserScramMaster = () => {
+    if (scrumMasterId === userId && userId && scrumMasterId)
+    return true;
+    else return false;
+    
+  };
 
-
+console.log(userId)
   
-//console.log(activeProject)
+//console.log(isUserScramMaster())
 
 
 
@@ -297,14 +320,14 @@ function ProductBacklog() {
         };
         dispatch(updateStoryCategory(projectRoleData));
 
-        /*if (destination.droppableId === "Allocated" && destination.droppableId != source.droppableId) {
+        if (destination.droppableId === "Allocated" && destination.droppableId != source.droppableId) {
           const storySprint: StorySprint = {
-            sprintId: number,
-            storyId: removed.id
+            sprintId: parseInt(SprintSelector.activeSprint?.id || ""),
+            storyId: parseInt(removed.id || "")
           
         };
-        dispatch(updateSprint(sprintBody)); 
-        } */
+        dispatch(addStoryToSprint(storySprint)); 
+        } 
       })
     );
   };
@@ -453,6 +476,9 @@ function ProductBacklog() {
   // modal za edit story
   const [showEditStoryModal, setShowEditStoryModal] = useState(false);
 
+  // modal za reject
+  const [showRejectStoryModal, setShowRejectStoryModal] = useState(false);
+
   const openNewStoryModal = () => {
     setShowNewStoryModal(true);
   };
@@ -469,7 +495,13 @@ function ProductBacklog() {
   const hideEditStoryModal = () => {
     setShowEditStoryModal(false);
   };
-
+  const openRejectStoryModal = (item: StoryData) => {
+    setTempDataStory(item);
+    setShowRejectStoryModal(true);
+  };
+  const hideRejectStoryModal = () => {
+    setShowRejectStoryModal(false);
+  };
   const initvalue: StoryData = {
     id: "",
     title: "",
@@ -506,12 +538,12 @@ function ProductBacklog() {
               <div className="col-sm-4 col-md-3 col-xl-3 mt-3" key={status}>
                 <Card className="bg-light border-0 ">
                   <div className="pt-3 hstack gap-2 mx-3">
-                    <Card.Title className="fs-6 my-0">{status}</Card.Title>
+                    <Card.Title className="fs-6 my-0  text-truncate">{status}</Card.Title>
                     <div className="vr my-0"></div>
                     <p className="fs-6 my-0">{itemsByStatus[status].length}</p>
                     {status === ProductBacklogItemStatus.UNALLOCATED && (
                       <Button
-                        className="ms-auto"
+                        className="ms-auto m-0 p-0"
                         variant="light"
                         onClick={() => openNewStoryModal()}
                       >
@@ -543,7 +575,7 @@ function ProductBacklog() {
                                 isDragDisabled={
                                   status ===
                                     ProductBacklogItemStatus.WONTHAVE ||
-                                  !Boolean(itemTime[item.id!])
+                                  !Boolean(itemTime[item.id!]) || !isUserScramMaster()
                                 }
                               >
                                 {(provided, snapshot) => {
@@ -579,10 +611,10 @@ function ProductBacklog() {
                                                 ProductBacklogItemStatus.UNALLOCATED && (
                                                 <Dropdown.Item
                                                   onClick={() =>
-                                                    openEditStoryModal(item)
+                                                    openRejectStoryModal(item)
                                                   }
                                                 >
-                                                  <Pencil /> Reject
+                                                  <Eraser /> Reject
                                                 </Dropdown.Item>
                                               )}
                                               {status ===
@@ -616,10 +648,10 @@ function ProductBacklog() {
                                         <Card.Body>
                                           <Card.Text
                                             onClick={() => getDataStory(item)}
-                                            className="m-0"
+                                            className="m-0  text-truncate"
                                           >
                                             <Button
-                                              className="text-decoration-none"
+                                              className="text-decoration-none "
                                               variant="link"
                                             >
                                               {item.title}
@@ -687,9 +719,11 @@ function ProductBacklog() {
                                                     </InputGroup>
                                                   </Form>
                                                 )}
-                                                {!itemVisibility[item.id!] && (
+                                                {!itemVisibility[item.id!] && isUserScramMaster() &&   (
                                                   <Button
                                                     id={item.id}
+
+                                                    //isUserScramMaster
                                                     onClick={() =>
                                                       handleFormToggle(item.id!)
                                                     }
@@ -699,6 +733,9 @@ function ProductBacklog() {
                                                     {itemTime[item.id!]}
                                                     
                                                   </Button>
+                                                )}
+                                                {!isUserScramMaster() && (
+                                                <p className="m-0 p-0 float-end text-decoration-none">{itemTime[item.id!]}</p>
                                                 )}
                                               </Col>
                                             </Row>
@@ -763,6 +800,13 @@ function ProductBacklog() {
             />
           </Modal.Body>
         </Modal>
+      )}
+      {showRejectStoryModal && (
+        <RejectStoryModal
+          item={tempDataStory}
+          onCancel={() => setShowRejectStoryModal(false)}
+          show={showRejectStoryModal}
+        />
       )}
     </>
   );
