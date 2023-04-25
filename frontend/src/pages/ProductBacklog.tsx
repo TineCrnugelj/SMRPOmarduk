@@ -64,6 +64,7 @@ import Projects from "./Projects";
 import { getProjectUserRoles } from  "../features/projects/projectSlice";
 import { parseJwt } from "../helpers/helpers";
 import RejectStoryModal from "./RejectStoryModal";
+import { toast } from "react-toastify";
 
 
 //const token = JSON.parse(localStorage.getItem('user')!).token;
@@ -139,6 +140,21 @@ function ProductBacklog() {
   );
   let projectroles = useAppSelector((state) => state.projects);
   let SprintSelector = useAppSelector((state) => state.sprints);
+  
+  useEffect(() => {
+    if (SprintSelector.isStoryInSprint && !SprintSelector.isLoading) {
+      toast.success("Story successfully created!");
+      dispatch(reset());
+    }
+    if (SprintSelector.isNotStoryInSprint && !SprintSelector.isLoading) {
+      toast.error(SprintSelector.message);
+    }
+  }, [
+    SprintSelector.isStoryInSprint,
+    SprintSelector.isNotStoryInSprint ,
+    SprintSelector.isLoading,
+  ]);
+
   //console.log(SprintSelector)
   useEffect(() => {
     if (isSuccess && !isLoading) {
@@ -237,6 +253,7 @@ function ProductBacklog() {
   //console.log(stories)
   const navigate = useNavigate();
 
+  
 
   useEffect(() => {
     if (user === null) {

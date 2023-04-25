@@ -21,7 +21,7 @@ function Header() {
   const { user, lastLogin, userData } = useAppSelector((state) => state.users);
   const { sprints } = useAppSelector((state) => state.sprints);
   const {activeProject} = useAppSelector(state => state.projects);
-  
+
   const [sub, setSub] = useState('');
   const [isAdmin, setIsAdmin] = useState(false);
   const [lastLoginDate, setLastLoginDate] = useState("");
@@ -47,7 +47,6 @@ function Header() {
   }, [activeProject, dispatch, sprints.length]);
 
   useEffect(() => {}, [userData]);
-
   const activeSprint = useMemo(() => {
     const activeSpr = sprints.find(sprint => {
       const startDate = new Date(sprint.startDate);

@@ -10,6 +10,8 @@ interface SprintState {
     isSuccess: boolean
     isError: boolean
     message: any
+    isNotStoryInSprint: boolean 
+    isStoryInSprint: boolean
 }
 
 const initialState: SprintState = {
@@ -20,6 +22,8 @@ const initialState: SprintState = {
     isSuccess: false,
     isError: false,
     message: '',
+    isNotStoryInSprint: false,
+    isStoryInSprint: false
 }
 
 export const createSprint = createAsyncThunk('sprint/create', async (sprintBody: SprintBody, thunkAPI: any) => {
@@ -92,6 +96,8 @@ export const sprintSlice = createSlice({
             state.isSuccess = false
             state.message = ''
             state.isUpdated = false;
+            state.isStoryInSprint = false
+            state.isNotStoryInSprint = false
         },
         setActiveSprint: (state, action) => {
             state.activeSprint = action.payload;
@@ -120,15 +126,15 @@ export const sprintSlice = createSlice({
         })
         .addCase(addStoryToSprint.fulfilled, (state, action) => {
             state.isLoading = false;
-            state.isSuccess = true;
-            state.isError = false;
+            state.isStoryInSprint = true;
+            state.isNotStoryInSprint = false;
             state.message = '';
             state.sprints.push(action.payload);
         })
         .addCase(addStoryToSprint.rejected, (state, action) => {
             state.isLoading = false
-            state.isSuccess = false;
-            state.isError = true
+            state.isStoryInSprint = false;
+            state.isNotStoryInSprint = true
             state.message = action.payload
         })
         .addCase(updateSprint.pending, (state) => {

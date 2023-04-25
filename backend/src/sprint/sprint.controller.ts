@@ -155,10 +155,13 @@ export class SprintController {
     if (!sprint)
       throw new BadRequestException('No sprint with the given ID exists in the ');
 
+<<<<<<< HEAD
     const storyIdsInSprint = (await this.storyService.getStoryIdsForSprint(storyId)).length;
     if (sprint.velocity = storyIdsInSprint)
       throw new BadRequestException('The number of stories in the sprint is equal to the sprint velocity.');
 
+=======
+>>>>>>> a0a3a81cc8539092349fdaf5b3c6e7b09866e719
     if (!token.isAdmin && !await this.projectService.hasUserRoleOnProject(story.projectId, token.sid, UserRole.ScrumMaster))
       throw new ForbiddenException('Only the scrum master can add the story to sprint.');
 
