@@ -6,6 +6,8 @@ import { UserLogin } from '../auth/user-login.entity';
 import { StoryNotification } from '../story-notification/story-notification.entity';
 import { ProjectWallNotification } from '../project-wall-notification/project-wall-notification.entity';
 import { ProjectWallNotificationComment } from '../project-wall-notification-comment/comment.entity';
+import { Story } from '../story/story.entity';
+import { PlanningPokerVote } from '../story/planning-poker-vote.entity';
 
 @Entity()
 export class User {
@@ -57,9 +59,6 @@ export class User {
   @OneToMany(type => Task, task => task.assignedUser)
   tasks: Task[];
 
-  @OneToMany(type => TaskUserTime, taskTime => taskTime.user)
-  taskTime: TaskUserTime[];
-
   @OneToMany(type => StoryNotification, storyNotification => storyNotification.author)
   storyNotifications: StoryNotification[];
 
@@ -68,4 +67,13 @@ export class User {
 
   @OneToMany(type => ProjectWallNotificationComment, projectWallNotificationComment => projectWallNotificationComment.user)
   projectWallNotificationComments: ProjectWallNotificationComment[];
+
+  @OneToMany(type => TaskUserTime, taskTime => taskTime.user)
+  taskTime: TaskUserTime[];
+
+  @OneToMany(type => Story, story => story.user)
+  stories: Story[];
+
+  @OneToMany(type => PlanningPokerVote, votes => votes.user)
+  planningPockerVotes: PlanningPokerVote[];
 }

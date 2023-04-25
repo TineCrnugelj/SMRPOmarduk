@@ -57,6 +57,7 @@ import {
   getAllSprints,
 } from "../features/sprints/sprintSlice";
 import { StorySprint } from "../classes/sprintData";
+import PlanninPokerModal from "../components/PlanningPokerModal";
 
 //const token = JSON.parse(localStorage.getItem('user')!).token;
 
@@ -148,9 +149,6 @@ function ProductBacklog() {
     dispatch(getActiveProject());
     dispatch(getAllSprints(activeProject.id!));
   }, []);
-//console.log(activeProject)
-console.log(SprintSelector)
-
 
   // NOTE: temporary fix, change this if needed
   /*
@@ -287,10 +285,6 @@ console.log(SprintSelector)
   const [itemVisibility, setItemVisibility] = useState<{
     [itemId: string]: boolean;
   }>({});
-  //za beleženje vnosačasa
-  const [itemTime, setItemTime] = useState<{
-    [itemId: string]: number;
-  }>({});
 
   const handleFormToggle = (itemId: string) => {
     setItemVisibility((prev) => {
@@ -303,31 +297,20 @@ console.log(SprintSelector)
     (itemId: string) => (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       handleFormToggle(itemId);
-
-
-      let projectRoleData = {
-        timeComplexity: itemTime[itemId],
-        storyId: itemId,
-      };
-      dispatch(updateTimeComplexity(projectRoleData));
-
     };
   const handleKeyDown = (e: any) => {
     e.preventDefault();
 
     const val = e.target.value;
-    const targetId = e.target.id
-    
-    if (val.length > 0 && /^\d+$/.test(val)) {
-      setItemTime((prev) => {
-        const newState = { ...prev };
-        newState[targetId] = val;
-        return newState;
-      });
-  }
+    let projectRoleData1 = {
+      timeComplexity: val,
+      storyId: e.target.id,
+    };
 
-    
-    
+    console.log(projectRoleData1);
+    if (val.length > 0 && /^\d+$/.test(val)) {
+      dispatch(updateTimeComplexity(projectRoleData1));
+    }
     //else if (e.target.value == '') dispatch(updateTimeComplexity(projectRoleData2));
     //dispatch(getAllStory());
   };
@@ -354,16 +337,11 @@ console.log(SprintSelector)
           // Adding new item as "to do"
           //console.log("zgodbice ob updatu")
           //console.log(stories)
-          const visibilityObject: { [itemId: string]: boolean } = {};
-          const insertTimeObject: { [itemId: string]: number } = {};
           stories.forEach((story: StoryData) => {
             //za beleženje časa init values
-
+            const visibilityObject: { [itemId: string]: boolean } = {};
             visibilityObject[story.id!] = false;
-            //za beleženje vnosa časa
-            insertTimeObject[story.id!] = story.timeComplexity;
-           
-            
+            setItemVisibility(visibilityObject);
             //storyi
             let cat;
             if (story.priority === 0) {
@@ -389,16 +367,13 @@ console.log(SprintSelector)
               isRealized: story.isRealized,
             });
           });
-          setItemVisibility(visibilityObject);
-          setItemTime(insertTimeObject);
         })
       );
     }
-  }, [isSuccess]);
+  }, [isSuccess, stories]);
 
   //{Object.values.map(([columnId, column], index) => {
-  console.log(itemTime)
-  console.log(itemVisibility)
+
   //modal za delete
   const [show, setShow] = useState(false);
 
@@ -409,6 +384,7 @@ console.log(SprintSelector)
 
   // modal za edit story
   const [showEditStoryModal, setShowEditStoryModal] = useState(false);
+  const [showPlanningPokerModal, setShowPlanningPokerModal] = useState(false);
 
   const openNewStoryModal = () => {
     setShowNewStoryModal(true);
@@ -426,6 +402,15 @@ console.log(SprintSelector)
   const hideEditStoryModal = () => {
     setShowEditStoryModal(false);
   };
+
+  const openPlanningPokerModal = (item: any) => {
+    setStoryId(item.id);
+    setShowPlanningPokerModal(true);
+  }
+
+  const closePlanningPokerModal = () => {
+    setShowPlanningPokerModal(false);
+  }
 
   const initvalue: StoryData = {
     id: "",
@@ -540,6 +525,11 @@ console.log(SprintSelector)
                                                   <Pencil /> Edit
                                                 </Dropdown.Item>
                                               )}
+                                              {
+                                                <Dropdown.Item onClick={() => {openPlanningPokerModal(item)}}>
+                                                  Planning poker
+                                                </Dropdown.Item>
+                                              }
                                               {status ===
                                                 ProductBacklogItemStatus.UNALLOCATED && (
                                                 <Dropdown.Item
@@ -630,7 +620,7 @@ console.log(SprintSelector)
                                                         className="mobileBox"
                                                         size="sm"
                                                         pattern="[0-9]*"
-                                                        value={itemTime[item.id!]}
+                                                        defaultValue="0"
                                                         id={item.id}
                                                         onChange={handleKeyDown}
                                                         type="tel"
@@ -651,8 +641,7 @@ console.log(SprintSelector)
                                                     variant="link"
                                                     className="m-0 p-0 float-end text-decoration-none"
                                                   >
-                                                    {itemTime[item.id!]}
-                                                    
+                                                    {item.timeComplexity}
                                                   </Button>
                                                 )}
                                               </Col>
@@ -719,6 +708,7 @@ console.log(SprintSelector)
           </Modal.Body>
         </Modal>
       )}
+      {showPlanningPokerModal && <PlanninPokerModal storyId={tempDataStory.id!} closeModal={closePlanningPokerModal} showModal={showPlanningPokerModal} />}
     </>
   );
 }
