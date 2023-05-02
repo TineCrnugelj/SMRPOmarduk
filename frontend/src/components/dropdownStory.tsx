@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import React, {memo, useEffect} from "react";
 import {
     Button,
     Card,
@@ -41,6 +41,9 @@ import { Link } from "react-router-dom";
     openEditStoryModal: (args: {
         item: StoryData;
       }) => void;
+    handleShowPlanningPokerModal: (args: {
+        item: StoryData;
+      }) => void;
     setShow: (arg0: boolean) => void;
     getDataReject: (args: {
         item: StoryData;
@@ -49,17 +52,9 @@ import { Link } from "react-router-dom";
       }) => void;
     show: boolean;
   }
-  
-
-
-  
-
 
 const DropdownStory = memo(
-  ({ status, item, index, getDataReject, openEditStoryModal, setShow, show }: DropdownProps) => {
-
-
-    
+  ({ status, item, index, getDataReject, openEditStoryModal, handleShowPlanningPokerModal, setShow, show }: DropdownProps) => {
     return (
         <>
       <Dropdown   className="ms-auto">
@@ -91,6 +86,11 @@ const DropdownStory = memo(
               <Trash /> Delete
             </Dropdown.Item>
           )}
+          <Dropdown.Item onClick={() => {handleShowPlanningPokerModal({item})}}>
+              <SuitSpadeFill /> Delete
+            </Dropdown.Item>
+        
+
           <DeleteConfirmation
             item={item}
             onCancel={() => setShow(false)}

@@ -12,6 +12,7 @@ import PokerRound from "./PokerRound";
 import VotesContainer from "./VotesContainer";
 import {ArrowClockwise} from "react-bootstrap-icons";
 
+import classes from './PlanningPokerModal.module.css';
 
 interface PlanningPokerModalProps {
   isUserScrumMaster: boolean
@@ -70,7 +71,7 @@ const PlanningPokerModal: React.FC<PlanningPokerModalProps> = ({projectId, story
           <Button onClick={reloadRounds} variant='outline-primary' style={{marginBottom: '.5rem', marginLeft: '.5rem'}}><ArrowClockwise /></Button>
         </div>
 
-        <Table striped bordered hover>
+        <Table striped bordered hover className={classes.tableContainer}>
           <thead>
             <tr>
               <th>id</th>
@@ -80,7 +81,7 @@ const PlanningPokerModal: React.FC<PlanningPokerModalProps> = ({projectId, story
             </tr>
           </thead>
           <tbody>
-            {pokerRounds.map((round, i) => (
+            {pokerRounds.length > 0 ? pokerRounds.map((round, i) => (
               <PokerRound
                 key={i}
                 roundId={round.id!}
@@ -90,7 +91,9 @@ const PlanningPokerModal: React.FC<PlanningPokerModalProps> = ({projectId, story
                 setShowVotingOptions={setShowVotingOptions}
                 shouldReload={shouldReload}
               />
-            ))}
+            )) : <td className='text-secondary' colSpan={userRoles.length} style={{ textAlign: "center" }}>
+              No rounds yet
+            </td>}
           </tbody>
         </Table>
         <Fragment>
