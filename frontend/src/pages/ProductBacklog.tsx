@@ -14,6 +14,7 @@ import {
   CloseButton,
   Col,
   Dropdown,
+  DropdownButton,
   Form,
   InputGroup,
   ListGroup,
@@ -97,13 +98,13 @@ type TaskboardData = Record<ProductBacklogItemStatus, StoryData[]>;
 function ProductBacklog() {
   const dispatch = useAppDispatch();
 
-  
+
   const { userRoles } = useAppSelector((state) => state.projects);
   const [showPlanningPokerModal, setShowPlanningPokerModal] = useState(false);
   const [storyIdForPoker, setStoryIdForPoker] = useState('');
   //dispatch(getActiveProject());
   //helper funkcija za updatat useState
-  
+
 
   let {
     stories,
@@ -120,12 +121,15 @@ function ProductBacklog() {
   } = useAppSelector((state) => state.stories);
   let SprintSelector = useAppSelector((state) => state.sprints);
   let projectsState = useAppSelector((state) => state.projects);
+
+
+
   useEffect(() => {
-    if (SprintSelector.isStoryInSprint && !SprintSelector.isLoading) {
+    if (SprintSelector.isStoryInSprint && !SprintSelector.isLoading && SprintSelector.message !== '') {
       toast.success(SprintSelector.message);
       //dispatch(reset());
     }
-    if (SprintSelector.isNotStoryInSprint && !SprintSelector.isLoading) {
+    if (SprintSelector.isNotStoryInSprint && !SprintSelector.isLoading && SprintSelector.message !== '') {
       toast.error(SprintSelector.message);
     }
   }, [
@@ -135,14 +139,14 @@ function ProductBacklog() {
   ]);
 
   useEffect(() => {
-    if (SprintSelector.isSuccessActive && !SprintSelector.isLoadingActive) {
+    if (SprintSelector.isSuccessActive && !SprintSelector.isLoadingActive && SprintSelector.message !== '') {
       toast.success(SprintSelector.message);
       if (SprintSelector.activeSprint !== undefined) {
         dispatch(getUnrealizedStoriesForSprint(SprintSelector.activeSprint.id!))
-      } 
-      //dispatch(reset());
+      }
+      dispatch(reset());
     }
-    if (SprintSelector.isErrorActive && !SprintSelector.isLoadingActive) {
+    if (SprintSelector.isErrorActive && !SprintSelector.isLoadingActive && SprintSelector.message !== '') {
       toast.error(SprintSelector.message);
     }
   }, [
@@ -153,10 +157,10 @@ function ProductBacklog() {
 
   //console.log(SprintSelector)
   useEffect(() => {
-    if (isSuccess && !isLoading) {
+    if (isSuccess && !isLoading && message !== '') {
       toast.success(message)
     }
-    if (isError && !isLoading) {
+    if (isError && !isLoading && message !== '') {
       toast.error(message);
     }
   }, [isSuccess, isError, isLoading]);
@@ -165,6 +169,7 @@ function ProductBacklog() {
 
   useEffect(() => {
     dispatch(getActiveProject());
+    console.log("začetek")
   }, []);
 
   useEffect(() => {
@@ -173,22 +178,23 @@ function ProductBacklog() {
       dispatch(getAllSprints(projectsState.activeProject.id!));
       dispatch(getProjectUserRoles(projectsState.activeProject.id!));
       dispatch(getActiveSprint(projectsState.activeProject.id!));
-      
+      console.log("drugič začetek")
+      dispatch(reset())
     }
-    if (projectsState.isActiveProjectError && !projectsState.isActiveProjectLoading) {
+    if (projectsState.isActiveProjectError && !projectsState.isActiveProjectLoading && projectsState.message !== '') {
       toast.error(projectsState.message);
     }
-  }, [projectsState.isActiveProjectSuccess, projectsState.isActiveProjectLoading, projectsState.isActiveProjectError]);
-
+  }, [projectsState.activeProject]);
 
 
   useEffect(() => {
-    
-    if (projectsState.activeProject.id) {
+
+    if (projectsState.isActiveProjectSuccess && !projectsState.isActiveProjectLoading && isCategorySuccess && !isCategoryLoading) {
       dispatch(getAllStoryById(projectsState.activeProject.id!));
       dispatch(getAllSprints(projectsState.activeProject.id!));
-      dispatch(getProjectUserRoles(projectsState.activeProject.id!))
-      console.log(projectsState.activeProject)
+      dispatch(getProjectUserRoles(projectsState.activeProject.id!));
+      dispatch(getActiveSprint(projectsState.activeProject.id!));
+      dispatch(reset())
     }
   }, [isCategoryError, isCategorySuccess, isCategoryLoading]);
 
@@ -323,9 +329,9 @@ function ProductBacklog() {
 
 
   const handleDragEnd: DragDropContextProps["onDragEnd"] = ({
-    source,
-    destination,
-  }) => {
+                                                              source,
+                                                              destination,
+                                                            }) => {
     setItemsByStatus((current) =>
       produce(current, (draft) => {
         // dropped outside the list
@@ -362,7 +368,7 @@ function ProductBacklog() {
            */
         const [removed] = draft[
           source.droppableId as ProductBacklogItemStatus
-        ].splice(source.index, 1);
+          ].splice(source.index, 1);
 
         draft[destination.droppableId as ProductBacklogItemStatus].splice(
           destination.index,
@@ -452,14 +458,14 @@ function ProductBacklog() {
     //console.log(itemsByStatus)
 
     //console.log("doblejni podatki1")
+    //dispatch(getAllStoryById(projectsState.activeProject.id!));
+
+    resetState();
+    if (SprintSelector.isUnrealizedSuccess && !SprintSelector.isUnrealizedLoading) {
+
+
+      //dispatch(reset());
       //dispatch(getAllStoryById(projectsState.activeProject.id!));
-
-      resetState();
-      if (SprintSelector.isUnrealizedSuccess && !SprintSelector.isUnrealizedLoading) {
-      
-
-        //dispatch(reset());
-        //dispatch(getAllStoryById(projectsState.activeProject.id!));
 
       setItemsByStatus((current) =>
         produce(current, (draft) => {
@@ -480,17 +486,17 @@ function ProductBacklog() {
           //  const uniquePrintStoryIds = Array.from(new Set(SprintSelector.unrealizedStories.map((item) => item.id)));
           if (stories) {
             stories.forEach((story: StoryData) => {
-              
+
               if (story.category === 2) {
                 if (SprintSelector.activeSprint === undefined) { return; }
                 const storyInSprint = SprintSelector.unrealizedStories.find((item) => item.id === story.id);
                 if (storyInSprint === undefined) {
                   return;
                 }
-                
+
               }
-              
-              
+
+
               //za beleženje časa init values
               visibilityObject[story.id!] = false;
               //za beleženje vnosa časa
@@ -507,8 +513,8 @@ function ProductBacklog() {
               draft[
                 ProductBacklogItemStatus[
                   cat as keyof typeof ProductBacklogItemStatus
-                ]
-              ].push({
+                  ]
+                ].push({
                 id: story.id?.toString(),
                 title: story.title,
                 description: story.description,
@@ -527,11 +533,11 @@ function ProductBacklog() {
           }
         })
       );
-      }
-      if (SprintSelector.isUnrealizedError && !SprintSelector.isUnrealizedLoading) {
-        toast.error(message);
-      }
-    
+    }
+    if (SprintSelector.isUnrealizedError && !SprintSelector.isUnrealizedLoading && message !== '') {
+      toast.error(message);
+    }
+
   }, [SprintSelector.isUnrealizedSuccess, SprintSelector.isUnrealizedLoading, SprintSelector.isUnrealizedError]);
 
   //{Object.values.map(([columnId, column], index) => {
@@ -591,7 +597,6 @@ function ProductBacklog() {
   const [tempDataStory, setTempDataStory] = useState<StoryData>(initvalue);
   const getDataStory = (item: StoryData) => {
     setTempDataStory(item);
-    console.log('call');
     //console.log(item);
     return setShowStory(true);
   };
@@ -632,7 +637,7 @@ function ProductBacklog() {
   function closePlanningPokerModal() {
     setShowPlanningPokerModal(false);
   }
-  
+
   //console.log(SprintSelector.activeSprint)
   const allocatedItems = itemsByStatus["Allocated"];
   const totalComplexity = allocatedItems.map((item) => item.timeComplexity).reduce((acc, curr) => acc + curr, 0);
@@ -662,9 +667,9 @@ function ProductBacklog() {
                     )}
                     {status === ProductBacklogItemStatus.ALLOCATED && (
                       <p className="fs-6 my-0 ms-auto">
-                    Velocity: {totalComplexity}  / {SprintSelector.activeSprint?.velocity}
+                        Velocity: {totalComplexity}  / {SprintSelector.activeSprint?.velocity}
                       </p>
-                     
+
                     )}
                   </div>
                   <hr className="hr mx-3" />
@@ -691,16 +696,16 @@ function ProductBacklog() {
                                 index={index}
                                 isDragDisabled={
                                   status ===
-                                    ProductBacklogItemStatus.WONTHAVE ||
+                                  ProductBacklogItemStatus.WONTHAVE ||
                                   !Boolean(itemTime[item.id!]) ||
                                   !isUserScramMaster()
                                     ? true
                                     : status === ProductBacklogItemStatus.DONE
-                                    ? true
-                                    : status ===
+                                      ? true
+                                      : status ===
                                       ProductBacklogItemStatus.ALLOCATED
-                                    ? true
-                                    : undefined
+                                        ? true
+                                        : undefined
                                 }
                               >
                                 {(provided, snapshot) => {
@@ -757,19 +762,12 @@ function ProductBacklog() {
                                             )}
                                           {status !==
                                             ProductBacklogItemStatus.WONTHAVE && (
-                                              <Fragment>
-                                                <DropdownStory
-                                                  item={item}
-                                                  status={status}
-                                                  index={index}
-                                                  openEditStoryModal={({item}) => openEditStoryModal(item)}
-                                                  setShow={setShow}
-                                                  getDataReject={({ item, status, index }) => getDataReject(item, status, index)}
-                                                  show={show}
-                                                />
-                                                <SuitSpadeFill onClick={() => {handleShowPlanningPokerModal(item)}} />
-                                              </Fragment>
-                                          )}
+
+
+                                              <DropdownStory item={item} status={status} index={index} openEditStoryModal={({item}) => openEditStoryModal(item)} setShow={setShow} getDataReject={({ item, status, index }) => getDataReject(item, status, index)} handleShowPlanningPokerModal={({item}) => handleShowPlanningPokerModal(item)} show={show}></DropdownStory>
+
+                                            )}
+
                                         </Card.Header>
                                         <Card.Body>
                                           <Card.Text
@@ -782,6 +780,8 @@ function ProductBacklog() {
                                             >
                                               {item.title}
                                             </Button>
+
+
                                           </Card.Text>
 
                                           <div className="text-end">
@@ -801,7 +801,7 @@ function ProductBacklog() {
                                                   stringPriority(
                                                     item.priority
                                                   )[1]
-                                                ]
+                                                  ]
                                               }`}
                                             >
                                               {stringPriority(item.priority)[0]}{" "}
@@ -836,7 +836,7 @@ function ProductBacklog() {
                                                         //value={itemTime[item.id!]}
                                                         placeholder={itemTime[
                                                           item.id!
-                                                        ].toString()}
+                                                          ].toString()}
                                                         id={item.id}
                                                         onChange={handleKeyDown}
                                                         type="tel"
