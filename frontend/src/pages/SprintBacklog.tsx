@@ -188,7 +188,6 @@ function SprintBacklog() {
 
   useEffect(() => {
     if (user === null) {
-      console.log("redirect");
       navigate("/login");
     }
   }, [user]);
@@ -348,15 +347,15 @@ function SprintBacklog() {
         All
         </ToggleButton>
         <ToggleButton id="tbg-radio-1" value={1}>
-        Unallocated
+        Unassigned
         </ToggleButton>
         <ToggleButton id="tbg-radio-2" value={2}>
-        Allocated
+        Assigned
         </ToggleButton>
         <ToggleButton id="tbg-radio-3" value={3}>
         In progress
         </ToggleButton>
-        <ToggleButton id="tbg-radio-4" value={4}>
+        <ToggleButton id="tbg-radio-4" value={250}>
         Finished
         </ToggleButton>
       </ToggleButtonGroup>
@@ -402,7 +401,7 @@ function SprintBacklog() {
                               .filter((task) => task.storyId === story.id)
                               .map((task) => (
                                 <>
-                                {task.category === 0 && task.category === valueBar && (
+                                {(valueBar === 0 ||  task.category === valueBar) && (
                                 <tr key={task.id}>
                                   <td>{task.id}</td>
                                   <td>{task.name}</td>

@@ -48,10 +48,7 @@ const Task: React.FC<TaskProps> = ({ task }) => {
     }
   }, [isSuccess, isError, isLoading]);
 
-  useEffect(() => {
-    console.log(workLogs);
-    console.log(task)
-  }, [workLogs])
+  useEffect(() => {}, [workLogs])
 
   useEffect(() => {
     if (isMyTaskSuccess && !isMyTaskLoading) {

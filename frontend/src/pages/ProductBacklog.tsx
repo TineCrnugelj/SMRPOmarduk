@@ -121,11 +121,11 @@ function ProductBacklog() {
   let SprintSelector = useAppSelector((state) => state.sprints);
   let projectsState = useAppSelector((state) => state.projects);
   useEffect(() => {
-    if (SprintSelector.isStoryInSprint && !SprintSelector.isLoading) {
+    if (SprintSelector.isStoryInSprint && !SprintSelector.isLoading && SprintSelector.message !== '') {
       toast.success(SprintSelector.message);
       //dispatch(reset());
     }
-    if (SprintSelector.isNotStoryInSprint && !SprintSelector.isLoading) {
+    if (SprintSelector.isNotStoryInSprint && !SprintSelector.isLoading && SprintSelector.message !== '') {
       toast.error(SprintSelector.message);
     }
   }, [
@@ -135,14 +135,14 @@ function ProductBacklog() {
   ]);
 
   useEffect(() => {
-    if (SprintSelector.isSuccessActive && !SprintSelector.isLoadingActive) {
+    if (SprintSelector.isSuccessActive && !SprintSelector.isLoadingActive && SprintSelector.message !== '') {
       toast.success(SprintSelector.message);
       if (SprintSelector.activeSprint !== undefined) {
         dispatch(getUnrealizedStoriesForSprint(SprintSelector.activeSprint.id!))
       } 
       //dispatch(reset());
     }
-    if (SprintSelector.isErrorActive && !SprintSelector.isLoadingActive) {
+    if (SprintSelector.isErrorActive && !SprintSelector.isLoadingActive && SprintSelector.message !== '') {
       toast.error(SprintSelector.message);
     }
   }, [
@@ -153,10 +153,10 @@ function ProductBacklog() {
 
   //console.log(SprintSelector)
   useEffect(() => {
-    if (isSuccess && !isLoading) {
+    if (isSuccess && !isLoading && message !== '') {
       toast.success(message)
     }
-    if (isError && !isLoading) {
+    if (isError && !isLoading && message !== '') {
       toast.error(message);
     }
   }, [isSuccess, isError, isLoading]);
@@ -175,7 +175,7 @@ function ProductBacklog() {
       dispatch(getActiveSprint(projectsState.activeProject.id!));
       
     }
-    if (projectsState.isActiveProjectError && !projectsState.isActiveProjectLoading) {
+    if (projectsState.isActiveProjectError && !projectsState.isActiveProjectLoading && projectsState.message !== '') {
       toast.error(projectsState.message);
     }
   }, [projectsState.isActiveProjectSuccess, projectsState.isActiveProjectLoading, projectsState.isActiveProjectError]);
@@ -188,7 +188,6 @@ function ProductBacklog() {
       dispatch(getAllStoryById(projectsState.activeProject.id!));
       dispatch(getAllSprints(projectsState.activeProject.id!));
       dispatch(getProjectUserRoles(projectsState.activeProject.id!))
-      console.log(projectsState.activeProject)
     }
   }, [isCategoryError, isCategorySuccess, isCategoryLoading]);
 
@@ -528,7 +527,7 @@ function ProductBacklog() {
         })
       );
       }
-      if (SprintSelector.isUnrealizedError && !SprintSelector.isUnrealizedLoading) {
+      if (SprintSelector.isUnrealizedError && !SprintSelector.isUnrealizedLoading && message !== '') {
         toast.error(message);
       }
     
