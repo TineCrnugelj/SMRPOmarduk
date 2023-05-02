@@ -31,6 +31,16 @@ const getStoriesForSprint = async (sprintId: string, token: string) => {
 
     return response.data;
 }
+const getNotificationReject = async (storyId: string, token: string) => {
+    const config = {
+        headers: {
+            Authorization: `JWT ${token}`
+        }
+    }
+
+    const response = await axios.get(`${STORY_API_URL}/${storyId}/notifications/rejection`, config);
+    return response.data;
+}
 
 const getStoriesForUser = async (token: string) => {
     const config = {
@@ -167,7 +177,8 @@ const storyService = {
     updateTimeComplexity,
     rejectStory,
     getStoriesForUser,
-    confirmStory
+    confirmStory,
+    getNotificationReject
 }
 
 export default storyService;

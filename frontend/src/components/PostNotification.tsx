@@ -2,13 +2,13 @@ import React, {Fragment, useEffect, useMemo, useState} from "react";
 
 import {Card, Col, Form, Row} from "react-bootstrap";
 
-import classes from './Post.module.css';
+
 import {Button} from "react-bootstrap";
 import {Trash, TrashFill, X} from "react-bootstrap-icons";
 import {useAppDispatch, useAppSelector} from "../app/hooks";
 import {addComment, deleteComment, deletePost} from "../features/projects/projectWallSlice";
 import {toast} from "react-toastify";
-
+import classes from "./PostNotification.module.css";
 interface PostProps {
   id: string,
   content: string,
@@ -74,10 +74,8 @@ const PostNotification: React.FC<PostProps> = ({id, user, content, author, creat
                 <span><b>{author}, </b></span>
                 <span>{formattedDate}</span>
               </div>
-              <Card.Text>{content}</Card.Text>
+              <p className={classes.cardtext}>{content}</p>
             </Col>
-            
-            
           </Row>
           </Card.Body>
         </Card>

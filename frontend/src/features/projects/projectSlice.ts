@@ -142,13 +142,11 @@ export const projectSlice = createSlice({
             state.message = action.payload
         })
           .addCase(getActiveProject.pending, (state) => {
-              state.isLoading = true;
+              
               state.isActiveProjectLoading = true
           })
           .addCase(getActiveProject.fulfilled, (state, action) => {
-              state.isLoading = false;
-              state.isSuccess = true;
-              state.isError = false;
+              
               state.isActiveProjectLoading = false;
               state.isActiveProjectSuccess = true;
               state.isActiveProjectError = false;
@@ -156,9 +154,7 @@ export const projectSlice = createSlice({
               state.activeProject = action.payload;
           })
           .addCase(getActiveProject.rejected, (state, action) => {
-              state.isLoading = false
-              state.isSuccess = false;
-              state.isError = true;
+              
               state.isActiveProjectLoading = false
               state.isActiveProjectSuccess = false;
               state.isActiveProjectError = true;

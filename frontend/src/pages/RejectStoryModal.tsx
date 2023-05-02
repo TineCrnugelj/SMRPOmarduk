@@ -55,7 +55,7 @@ function RejectStoryModal({
       };
       
       dispatch(updateStoryCategory(projectRoleData));
-      dispatch(reset());
+      //dispatch(reset());
       onCancel();
     }
     if (isRejectError && !isRejectLoading) {

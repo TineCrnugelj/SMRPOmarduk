@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { RejectStory, StoryData, UpdateStoryCategory, UpdateTimeComplexity } from "../../classes/storyData";
 import storyService from "./storyService";
+import { getrejectionNotification } from "./storyNotificationSlice";
 
 let user = JSON.parse(localStorage.getItem('user')!);
 
@@ -8,6 +9,7 @@ interface StoryState {
     stories: StoryData[]
     storiesForSprint: StoryData[]
     storiesForUser: StoryData[]
+    notificationReject: any[]
     isLoading: boolean
     isSuccess: boolean
     isError: boolean
@@ -33,6 +35,7 @@ const initialState: StoryState = {
     stories: [],
     storiesForSprint: [],
     storiesForUser: [],
+    notificationReject: [],
     isLoading: false,
     isSuccess: false,
     isError: false,
@@ -59,6 +62,15 @@ export const getAllStoryById = createAsyncThunk('/story/getAllStoryById', async 
     try {
         const token = JSON.parse(localStorage.getItem('user')!).token;
         return await storyService.getAllStoryById(projectId, token!);
+    } catch (error: any) {
+        const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }  
+});
+export const getNotificationReject = createAsyncThunk('/story/getNotificationReject', async (storyId: string, thunkAPI: any) => { 
+    try {
+        const token = JSON.parse(localStorage.getItem('user')!).token;
+        return await storyService.getNotificationReject(storyId, token!);
     } catch (error: any) {
         const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString()
         return thunkAPI.rejectWithValue(message)
@@ -207,10 +219,16 @@ export const storySlice = createSlice({
                 state.message = '';
                 state.stories = action.payload
             })
-            .addCase(getStoriesForSprint.rejected, (state, action) => {
+            .addCase(getAllStoryById.rejected, (state, action) => {
                 state.isStoriesLoading = false
                 state.isStoriesSuccess = false;
                 state.isStoriesError = true
+                state.message = action.payload
+            })
+            .addCase(getStoriesForSprint.rejected, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = false;
+                state.isError = true
                 state.message = action.payload
             })
             .addCase(getStoriesForSprint.pending, (state) => {
@@ -238,6 +256,22 @@ export const storySlice = createSlice({
                 state.isError = false;
                 state.message = '';
                 state.storiesForUser = action.payload;
+            })
+            .addCase(getNotificationReject.rejected, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = false;
+                state.isError = true
+                state.message = action.payload
+            })
+            .addCase(getNotificationReject.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(getNotificationReject.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isSuccess = true;
+                state.isError = false;
+                state.message = '';
+                state.notificationReject = action.payload;
             })
             .addCase(deleteStory.rejected, (state, action) => {
                 state.isLoading = false

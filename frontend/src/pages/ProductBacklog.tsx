@@ -14,6 +14,7 @@ import {
   CloseButton,
   Col,
   Dropdown,
+  DropdownButton,
   Form,
   InputGroup,
   ListGroup,
@@ -120,6 +121,9 @@ function ProductBacklog() {
   } = useAppSelector((state) => state.stories);
   let SprintSelector = useAppSelector((state) => state.sprints);
   let projectsState = useAppSelector((state) => state.projects);
+
+
+  
   useEffect(() => {
     if (SprintSelector.isStoryInSprint && !SprintSelector.isLoading) {
       toast.success(SprintSelector.message);
@@ -140,7 +144,7 @@ function ProductBacklog() {
       if (SprintSelector.activeSprint !== undefined) {
         dispatch(getUnrealizedStoriesForSprint(SprintSelector.activeSprint.id!))
       } 
-      //dispatch(reset());
+      dispatch(reset());
     }
     if (SprintSelector.isErrorActive && !SprintSelector.isLoadingActive) {
       toast.error(SprintSelector.message);
@@ -165,6 +169,7 @@ function ProductBacklog() {
 
   useEffect(() => {
     dispatch(getActiveProject());
+    console.log("začetek")
   }, []);
 
   useEffect(() => {
@@ -173,22 +178,25 @@ function ProductBacklog() {
       dispatch(getAllSprints(projectsState.activeProject.id!));
       dispatch(getProjectUserRoles(projectsState.activeProject.id!));
       dispatch(getActiveSprint(projectsState.activeProject.id!));
-      
+      console.log("drugič začetek")
+      dispatch(reset())
     }
     if (projectsState.isActiveProjectError && !projectsState.isActiveProjectLoading) {
       toast.error(projectsState.message);
     }
-  }, [projectsState.isActiveProjectSuccess, projectsState.isActiveProjectLoading, projectsState.isActiveProjectError]);
+  }, [projectsState.activeProject]);
 
 
-
+console.log(projectsState.activeProject)
   useEffect(() => {
     
-    if (projectsState.activeProject.id) {
+    if (projectsState.isActiveProjectSuccess && !projectsState.isActiveProjectLoading && isCategorySuccess && !isCategoryLoading) {
       dispatch(getAllStoryById(projectsState.activeProject.id!));
       dispatch(getAllSprints(projectsState.activeProject.id!));
-      dispatch(getProjectUserRoles(projectsState.activeProject.id!))
-      console.log(projectsState.activeProject)
+      dispatch(getProjectUserRoles(projectsState.activeProject.id!));
+      dispatch(getActiveSprint(projectsState.activeProject.id!));
+      console.log("drugič začetek")
+      dispatch(reset())
     }
   }, [isCategoryError, isCategorySuccess, isCategoryLoading]);
 
@@ -630,8 +638,8 @@ function ProductBacklog() {
     setShowPlanningPokerModal(false);
   }
 
-  console.log(SprintSelector.activeSprint)
-  console.log(SprintSelector.unrealizedStories)
+  //console.log(SprintSelector.activeSprint)
+  //console.log(SprintSelector.unrealizedStories)
   
   //console.log(SprintSelector.activeSprint)
   const allocatedItems = itemsByStatus["Allocated"];
@@ -757,8 +765,12 @@ function ProductBacklog() {
                                             )}
                                           {status !==
                                             ProductBacklogItemStatus.WONTHAVE && (
+                                            
+                            
                                             <DropdownStory item={item} status={status} index={index} openEditStoryModal={({item}) => openEditStoryModal(item)} setShow={setShow} getDataReject={({ item, status, index }) => getDataReject(item, status, index)} show={show}></DropdownStory>
+                                            
                                           )}
+                                          
                                         </Card.Header>
                                         <Card.Body>
                                           <Card.Text
@@ -771,8 +783,10 @@ function ProductBacklog() {
                                             >
                                               {item.title}
                                             </Button>
-                                          </Card.Text>
+                                           
 
+                                          </Card.Text>
+                                          
                                           <div className="text-end">
                                             <small className="custom-font-size text-muted mb-1 d-inline-block">
                                               25%
